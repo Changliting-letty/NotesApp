@@ -118,20 +118,40 @@
         app:layout_constraintVertical_bias="0.893"
         app:layout_constraintWidth_percent=".8" />
 
-    <TextView
-            android:id="@+id/tv2"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+         app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintStart_toStartOf="@+id/password"
+           app:layout_constraintTop_toBottomOf="@+id/password"
+           app:layout_constraintVertical_bias="0.0"
+           app:layout_constraintWidth_percent=".8" >
+        <CheckBox
+            android:id="@+id/rememberPass"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Forget Password"
-            app:layout_constraintVertical_bias="0"
-            app:layout_constraintHorizontal_bias="1"
-            android:layout_marginTop="20dp"
-            android:layout_marginRight="5dp"
-            app:layout_constraintWidth_percent=".8"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/password"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/password"/>
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:text="Remember Password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+    <TextView
+    android:id="@+id/tv2"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Forget Password"
+    app:layout_constraintVertical_bias="0"
+    app:layout_constraintHorizontal_bias="1"
+    android:layout_marginTop="20dp"
+    android:layout_marginRight="5dp"
+    app:layout_constraintWidth_percent=".8"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="@+id/password"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/password"/>
     <TextView
         android:id="@+id/to_sign_up"
         android:layout_width="wrap_content"

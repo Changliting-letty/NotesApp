@@ -1,5 +1,6 @@
 package com.lettytrain.notesapp
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -23,6 +24,18 @@ class LoginActivity : AppCompatActivity(),CoroutineScope {
         super.onCreate(savedInstanceState)
         job = Job()
         setContentView(R.layout.activity_login)
+        //记住密码功能
+        val prefs=getPreferences(Context.MODE_PRIVATE)
+        val isRemember=prefs.getBoolean("remember_pass",false)
+        if(isRemember){
+            //将用户名和密码都设置到文本框中
+            val  user_name=prefs.getString("userName","")
+            val pass_word=prefs.getString("passWord","")
+            username.setText(user_name)
+            password.setText(pass_word)
+            rememberPass.isChecked=true
+        }
+
         login.setOnClickListener {
             //判空
             if (username.text.isNullOrEmpty()) {
@@ -44,8 +57,19 @@ class LoginActivity : AppCompatActivity(),CoroutineScope {
                         Toast.makeText(MyApplication.context, "The Password is wrong!", Toast.LENGTH_SHORT).show()
                         password.setText("")
                     }else{
+                        //如果记住密码复选框被选中
+                        val editor=prefs.edit()
+                        if (rememberPass.isChecked){
+                            editor.putBoolean("remember_pass",true)
+                            editor.putString("userName",username.text.toString())
+                            editor.putString("passWord",password.text.toString())
+                        }else{
+                            editor.clear()
+                        }
+                        editor.apply()
                         val intent = Intent(MyApplication.context,MainActivity::class.java)
                         startActivity(intent)
+                        finish()
                     }
                 }
             }
@@ -53,6 +77,7 @@ class LoginActivity : AppCompatActivity(),CoroutineScope {
         to_sign_up.setOnClickListener {
             val intent = Intent(this, SignupActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
     }
