@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.lettytrain.notesapp.adapter.NotesAdapter
@@ -15,16 +16,20 @@ import com.lettytrain.notesapp.database.NotesDatabase
 import com.lettytrain.notesapp.entities.Notes
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.launch
+import java.util.*
+import kotlin.collections.ArrayList
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  主界面
  */
 class NotesHomeFragment :BaseFragment() {
+
+    var arrNotes=ArrayList<Notes>()
+    var notesAdapter:NotesAdapter=NotesAdapter()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,21 +63,49 @@ class NotesHomeFragment :BaseFragment() {
         launch {
             context?.let{
                 var notes=NotesDatabase.getDatabase(it).noteDao().getAllNotes()
-                recycler_view.adapter=NotesAdapter(notes)
+                notesAdapter!!.setData(notes)
+                arrNotes=notes as ArrayList<Notes>
+                recycler_view.adapter=notesAdapter
             }
         }
+        notesAdapter!!.setOnClickListener(onClicked)
         fabBtnCreateNote.setOnClickListener{
-            replaceFragment(CreateNoteFragment())
+            replaceFragment(CreateNoteFragment.newInstance())
         }
+        //搜索笔记
+
+        search_view.setOnQueryTextListener(object :SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                var tempArr=ArrayList<Notes>()
+                for (arr in arrNotes){
+                    if (arr.title!!.toLowerCase(Locale.getDefault()).contains(newText.toString())){
+                        tempArr.add(arr)
+                    }
+                }
+                notesAdapter.setData(tempArr)
+                notesAdapter.notifyDataSetChanged()
+                return true
+            }
+        })
+
     }
     fun replaceFragment(fragment: Fragment){
         val fragmentTransaction=activity!!.supportFragmentManager.beginTransaction()
-//        if (isTransaction){
-//            fragmentTransaction.setCustomAnimations(android.R.anim.slide_out_right,android.R.anim.slide_in_left)
-//        }
-        //实现返回栈
-
         fragmentTransaction.replace(R.id.drawerLayout,fragment).addToBackStack(fragment.javaClass.simpleName)
         fragmentTransaction.commit()
+    }
+    private  val  onClicked=object :NotesAdapter.OnItemClickListener{
+        override fun onClicked(noteId: Int) {
+            var fragment:Fragment
+            var bundle=Bundle()  //用于传递数据
+            bundle.putInt("noteId",noteId)
+            fragment=CreateNoteFragment.newInstance()
+            fragment.arguments=bundle
+            replaceFragment(fragment)
+        }
     }
 }

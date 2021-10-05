@@ -3,17 +3,23 @@ package com.lettytrain.notesapp.adapter
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.OrientationEventListener
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.recyclerview.widget.RecyclerView
 import com.lettytrain.notesapp.R
 import com.lettytrain.notesapp.entities.Notes
 import kotlinx.android.synthetic.main.item_rv_notes.view.*
 import java.text.FieldPosition
+import javax.microedition.khronos.egl.EGL10
 
-class NotesAdapter(val arrayList: List<Notes>):RecyclerView.Adapter<NotesAdapter.NotesViewHolder>(){
+class NotesAdapter():
+    RecyclerView.Adapter<NotesAdapter.NotesViewHolder>(){
+     var listener:OnItemClickListener?=null
+    var arrayList=ArrayList<Notes>()
 
-   inner class NotesViewHolder(view:View):RecyclerView.ViewHolder(view){
+    class NotesViewHolder(view:View):RecyclerView.ViewHolder(view){
 
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):NotesViewHolder{
@@ -21,6 +27,12 @@ class NotesAdapter(val arrayList: List<Notes>):RecyclerView.Adapter<NotesAdapter
            LayoutInflater.from(parent.context).inflate(R.layout.item_rv_notes,parent,false))
     }
     override fun getItemCount()=arrayList.size
+    fun setData(arrNotesList:List<Notes>){
+        arrayList=arrNotesList as ArrayList<Notes>
+    }
+     fun setOnClickListener(listener1:OnItemClickListener){
+         listener=listener1
+     }
 
     override fun onBindViewHolder(holder:NotesViewHolder,position: Int){
         holder.itemView.tvTitle.text=arrayList[position].title
@@ -37,8 +49,12 @@ class NotesAdapter(val arrayList: List<Notes>):RecyclerView.Adapter<NotesAdapter
             holder.itemView.imgNote.visibility=View.GONE
         }
 
+        holder.itemView.cardView.setOnClickListener {
+            listener!!.onClicked(arrayList[position].id!!)
+        }
 
-
-
+    }
+    interface  OnItemClickListener{
+        fun onClicked(noteId:Int)
     }
 }

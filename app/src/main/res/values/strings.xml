@@ -4,6 +4,9 @@
     <string name="notes_title">Notes title</string>
     <string name="notes_sub_title">Notes  Sub Title</string>
     <string name="notes_description">Enter Note Here</string>
+    <string name="ok">Ok</string>
+    <string name="web_url">Enter Web Url</string>
+    <string name="cancel">Cancel</string>
     <string name="storage_permission_text">This app needs access to your storage.</string>
     <string name="search">Search Your Notes</string>
 
