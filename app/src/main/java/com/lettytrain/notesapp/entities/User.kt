@@ -16,6 +16,11 @@ class User: Serializable {
 
     @ColumnInfo(name = "password")
     var password:String?=null
+//    @ColumnInfo(name = "createTime")
+//    var creatTime:String?=null
+//    @ColumnInfo(name = "updateTime")
+//    var updateTime:String?=null
+
 
 
 }

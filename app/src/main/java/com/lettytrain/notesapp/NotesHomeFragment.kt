@@ -1,8 +1,10 @@
 package com.lettytrain.notesapp
 
 import android.content.Context
+import android.media.session.MediaSessionManager
 import android.net.Uri
 import android.os.Bundle
+import android.se.omapi.Session
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -62,14 +64,29 @@ class NotesHomeFragment :BaseFragment() {
         recycler_view.layoutManager=StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
         launch {
             context?.let{
-                var notes=NotesDatabase.getDatabase(it).noteDao().getAllNotes()
+//                val bundle=arguments
+//                var userId=bundle?.getInt("userId",-1)
+                val prefs=MyApplication.context.getSharedPreferences("session",Context.MODE_PRIVATE)
+                val userId=prefs.getInt("userId",-1)
+                var notes=NotesDatabase.getDatabase(it).noteDao().getAllNotesByUserId(userId!!)
+                //var notes=NotesDatabase.getDatabase(it).noteDao().getAllNotes()
                 notesAdapter!!.setData(notes)
+
                 arrNotes=notes as ArrayList<Notes>
                 recycler_view.adapter=notesAdapter
             }
         }
-        notesAdapter!!.setOnClickListener(onClicked)
+        notesAdapter.setOnClickListener(onClicked)
         fabBtnCreateNote.setOnClickListener{
+//            val userId=savedInstanceState?.getInt("userId",-1)
+//            var fragment:Fragment
+//            var bundle=Bundle()  //用于传递数据
+//            if (userId != null) {
+//                bundle.putInt("userId",userId)
+//            }
+//            fragment=CreateNoteFragment.newInstance()
+//            fragment.arguments=bundle
+//            replaceFragment(fragment)
             replaceFragment(CreateNoteFragment.newInstance())
         }
         //搜索笔记

@@ -64,6 +64,11 @@ class  CreateNoteFragment : BaseFragment() ,EasyPermissions.PermissionCallbacks,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+//        val bundle=arguments
+        //
+        val prefs=MyApplication.context.getSharedPreferences("session",Context.MODE_PRIVATE)
+
+       var  userId=prefs.getInt("userId",-1)
 
         if (noteId!=-1){
             launch {
@@ -108,7 +113,7 @@ class  CreateNoteFragment : BaseFragment() ,EasyPermissions.PermissionCallbacks,
             if (noteId!=-1){
                 updateNote()
             }else{
-                saveNote()
+                saveNote(userId!!)
             }
         }
         imgBack.setOnClickListener {
@@ -163,7 +168,7 @@ class  CreateNoteFragment : BaseFragment() ,EasyPermissions.PermissionCallbacks,
                 notes.title = etNoteTitle.text.toString()
                 notes.subTitle = etNoteSubTitle.text.toString()
                 notes.noteText = etNoteDesc.text.toString()
-                notes.dateTime = currentDate
+                notes.updateTime = currentDate
                 notes.color = selectedColor
                 notes.imgPath = selectedImagePath
                 notes.webLink = webLink
@@ -180,7 +185,7 @@ class  CreateNoteFragment : BaseFragment() ,EasyPermissions.PermissionCallbacks,
             }
         }
     }
-    private  fun saveNote() {
+    private  fun saveNote(userId:Int) {
         if (etNoteTitle.text.isNullOrEmpty()) {
             Toast.makeText(context, "Note Title is Requeried", Toast.LENGTH_SHORT).show()
         }
@@ -191,14 +196,17 @@ class  CreateNoteFragment : BaseFragment() ,EasyPermissions.PermissionCallbacks,
             Toast.makeText(context, "Note Description  must not be null", Toast.LENGTH_SHORT).show()
         } else {
             launch {
+
                 var notes = Notes()
                 notes.title = etNoteTitle.text.toString()
                 notes.subTitle = etNoteSubTitle.text.toString()
                 notes.noteText = etNoteDesc.text.toString()
-                notes.dateTime = currentDate
+                notes.createTime = currentDate
+                notes.updateTime=currentDate
                 notes.color=selectedColor
                 notes.imgPath=selectedImagePath
                 notes.webLink = webLink
+                notes.userId=userId
 
                 context?.let {
                     NotesDatabase.getDatabase(it).noteDao().insertNotes(notes)
@@ -255,26 +263,19 @@ class  CreateNoteFragment : BaseFragment() ,EasyPermissions.PermissionCallbacks,
                     colorView.setBackgroundColor(Color.parseColor(selectedColor))
 
                 }
-
-
                 "Green" -> {
                     selectedColor = intent.getStringExtra("selectedColor")!!
                     colorView.setBackgroundColor(Color.parseColor(selectedColor))
 
                 }
-
-
                 "Orange" -> {
                     selectedColor = intent.getStringExtra("selectedColor")!!
                     colorView.setBackgroundColor(Color.parseColor(selectedColor))
 
                 }
-
-
                 "Black" -> {
                     selectedColor = intent.getStringExtra("selectedColor")!!
                     colorView.setBackgroundColor(Color.parseColor(selectedColor))
-
                 }
                 "Image"->{
                             readStorageTask()
@@ -293,22 +294,17 @@ class  CreateNoteFragment : BaseFragment() ,EasyPermissions.PermissionCallbacks,
                     selectedColor = intent.getStringExtra("selectedColor")!!
                     colorView.setBackgroundColor(Color.parseColor(selectedColor))
                 }
-
             }
         }
-
     }
 
     override fun onDestroy() {
-
         LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(BroadcastReceiver)
         super.onDestroy()
     }
-
     private  fun hasReadStoragePerm():Boolean{
         return EasyPermissions.hasPermissions(requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE)
     }
-
 
     private  fun readStorageTask(){
         //是否在Manifest中静态申请了权限，如果没有就动态申请权限
@@ -331,17 +327,18 @@ class  CreateNoteFragment : BaseFragment() ,EasyPermissions.PermissionCallbacks,
         }
     }
     private  fun getPathFromUri(contentUri:Uri):String?{
-        var filepath:String?=null
+
         var cursor=requireActivity().contentResolver.query(contentUri,null,null,null,null)
         if (cursor==null){
-            filepath=contentUri.path
+            return contentUri.path
         }else{
             cursor.moveToFirst()
             var index=cursor.getColumnIndex("_data")
-            filepath=cursor.getString(index)
+          var  filepath=cursor.getString(index)
             cursor.close()
+            return filepath
         }
-        return filepath
+
 
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

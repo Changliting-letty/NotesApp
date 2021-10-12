@@ -1,5 +1,6 @@
 package com.lettytrain.notesapp
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -16,8 +17,13 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        replaceFragment(NotesHomeFragment())
-
+        val userId=intent.getIntExtra("userId",-1)
+        var fragment:Fragment
+        var bundle=Bundle()  //用于传递数据
+        bundle.putInt("userId",userId)
+        fragment=NotesHomeFragment.newInstance()
+        fragment.arguments=bundle
+        replaceFragment(fragment)
         setSupportActionBar(toolbar)
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)

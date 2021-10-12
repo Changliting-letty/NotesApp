@@ -12,6 +12,8 @@ import com.lettytrain.notesapp.database.NotesDatabase
 import com.lettytrain.notesapp.database.UserDatabase
 import com.lettytrain.notesapp.entities.Notes
 import com.lettytrain.notesapp.entities.User
+import com.lettytrain.notesapp.util.OKHttpCallback
+import com.lettytrain.notesapp.util.OKHttpUtils
 import kotlinx.android.synthetic.main.activity_signup.*
 import kotlinx.android.synthetic.main.fragment_create_note.*
 import kotlinx.coroutines.CoroutineScope
@@ -60,6 +62,8 @@ import kotlin.coroutines.CoroutineContext
 
                 }else{
                         //注册新用户
+                        //同步到后端数据库
+                        synchronousWithBackend(username.text.toString(),password.text.toString())
                         var user = User()
                         user.user_name=username.text.toString()
                         user.password=password.text.toString()
@@ -70,20 +74,22 @@ import kotlin.coroutines.CoroutineContext
                         Toast.makeText(MyApplication.context,"To Login......",Toast.LENGTH_SHORT).show()
                         val intent = Intent(MyApplication.context,LoginActivity::class.java)
                         startActivity(intent)
-
                        // supportFragmentManager.popBackStack()
                         //设置有个交互按钮，让用户选择是去登录还是继续留在这里
 
-
-
                     }
                 }
                     }
 
                     }
-
-
                 }
+    fun synchronousWithBackend(username:String,password:String) {
+        OKHttpUtils.get(
+            "http://10.236.35.203:8080/portal/user/signup.do?userName=${username}&password=${password}",
+            OKHttpCallback()
+        )
+
+    }
     override fun onDestroy() {
         super.onDestroy()
         job.cancel()

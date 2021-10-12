@@ -37,7 +37,7 @@ class NotesAdapter():
     override fun onBindViewHolder(holder:NotesViewHolder,position: Int){
         holder.itemView.tvTitle.text=arrayList[position].title
         holder.itemView.tvDesc.text=arrayList[position].noteText
-        holder.itemView.tvDateTime.text=arrayList[position].dateTime
+        holder.itemView.tvDateTime.text=arrayList[position].updateTime
 
         if(arrayList[position].color!=null){
             holder.itemView.cardView.setCardBackgroundColor(Color.parseColor(arrayList[position].color))

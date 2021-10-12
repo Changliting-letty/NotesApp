@@ -1,11 +1,14 @@
 package com.lettytrain.notesapp
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import com.lettytrain.notesapp.database.UserDatabase
+import com.lettytrain.notesapp.util.OKHttpCallback
+import com.lettytrain.notesapp.util.OKHttpUtils
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_login.password
 import kotlinx.android.synthetic.main.activity_login.username
@@ -26,6 +29,7 @@ class LoginActivity : AppCompatActivity(),CoroutineScope {
         setContentView(R.layout.activity_login)
         //记住密码功能
         val prefs=getPreferences(Context.MODE_PRIVATE)
+        val editor=prefs.edit()
         val isRemember=prefs.getBoolean("remember_pass",false)
         if(isRemember){
             //将用户名和密码都设置到文本框中
@@ -58,7 +62,6 @@ class LoginActivity : AppCompatActivity(),CoroutineScope {
                         password.setText("")
                     }else{
                         //如果记住密码复选框被选中
-                        val editor=prefs.edit()
                         if (rememberPass.isChecked){
                             editor.putBoolean("remember_pass",true)
                             editor.putString("userName",username.text.toString())
@@ -67,7 +70,16 @@ class LoginActivity : AppCompatActivity(),CoroutineScope {
                             editor.clear()
                         }
                         editor.apply()
+                        //同步到后端数据库
+                        synchronousWithBackend(username.text.toString(),password.text.toString())
+                        //用户SessionID
+                        var userID=UserDatabase.getDatabase(MyApplication.context).userDao().getUserID(username.text.toString())
+                        val prefall=MyApplication.context.getSharedPreferences("session",Context.MODE_PRIVATE)
+                        val editor1=prefall.edit()
+                        editor1.putInt("userId",userID)
+                        editor1.apply()
                         val intent = Intent(MyApplication.context,MainActivity::class.java)
+                   //     intent.putExtra("userId",userID)
                         startActivity(intent)
                         finish()
                     }
@@ -79,6 +91,12 @@ class LoginActivity : AppCompatActivity(),CoroutineScope {
             startActivity(intent)
             finish()
         }
+    }
+    fun synchronousWithBackend(username:String,password:String) {
+        OKHttpUtils.get(
+            "http://10.236.35.203:8080/portal/user/login.do?username=${username}&password=${password}",
+            OKHttpCallback()
+        )
 
     }
     override fun onDestroy() {

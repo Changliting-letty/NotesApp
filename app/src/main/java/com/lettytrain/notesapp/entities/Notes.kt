@@ -10,6 +10,8 @@ class Notes: Serializable {
 
     @PrimaryKey(autoGenerate = true)
     var id:Int? = null
+    @ColumnInfo(name="userId")
+    var userId:Int?= null
 
     @ColumnInfo(name = "title")
     var title:String? = null
@@ -17,8 +19,11 @@ class Notes: Serializable {
     @ColumnInfo(name = "sub_title")
     var subTitle:String? = null
 
-    @ColumnInfo(name = "date_time")
-    var dateTime:String? = null
+    @ColumnInfo(name = "create_time")
+    var createTime:String? = null
+
+    @ColumnInfo(name="update_time")
+    var updateTime:String?=null
 
     @ColumnInfo(name = "note_text")
     var noteText:String? = null
@@ -32,10 +37,4 @@ class Notes: Serializable {
     @ColumnInfo(name = "color")
     var color:String? = null
 
-
-    override fun toString(): String {
-
-        return "$title : $dateTime"
-
-    }
 }
