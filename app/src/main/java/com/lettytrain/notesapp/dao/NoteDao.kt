@@ -15,6 +15,8 @@ interface NoteDao {
 
     @Query("SELECT * FROM notes WHERE id =:id")
     suspend fun getSpecificNote(id:Int) : Notes
+    @Query("SELECT title FROM notes WHERE id=:id")
+    suspend fun getNoteTitle(id:Int):String
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNotes(note:Notes)

@@ -1,6 +1,5 @@
 package com.lettytrain.notesapp
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -12,7 +11,6 @@ import com.lettytrain.notesapp.util.OKHttpUtils
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_login.password
 import kotlinx.android.synthetic.main.activity_login.username
-import kotlinx.android.synthetic.main.activity_signup.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -94,7 +92,7 @@ class LoginActivity : AppCompatActivity(),CoroutineScope {
     }
     fun synchronousWithBackend(username:String,password:String) {
         OKHttpUtils.get(
-            "http://10.236.35.203:8080/portal/user/login.do?username=${username}&password=${password}",
+            "http://161.97.110.236:8080/portal/user/login.do?username=${username}&password=${password}",
             OKHttpCallback()
         )
 

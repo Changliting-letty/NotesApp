@@ -10,6 +10,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +20,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.lettytrain.notesapp.database.NotesDatabase
 import com.lettytrain.notesapp.entities.Notes
 import com.lettytrain.notesapp.util.NoteBottemSheetFragment
+import com.lettytrain.notesapp.util.OKHttpCallback
+import com.lettytrain.notesapp.util.OKHttpUtils
 import kotlinx.android.synthetic.main.fragment_create_note.*
 import kotlinx.android.synthetic.main.fragment_create_note.imgMore
 import kotlinx.android.synthetic.main.fragment_notes_bottom_sheet.*
@@ -40,7 +43,7 @@ class  CreateNoteFragment : BaseFragment() ,EasyPermissions.PermissionCallbacks,
     private  var noteId=-1
     var currentDate:String?=null
     private var webLink = ""
-    var selectedColor="#171C26"
+    var selectedColor :String?="#171C26"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         noteId=requireArguments().getInt("noteId",-1)
@@ -144,25 +147,20 @@ class  CreateNoteFragment : BaseFragment() ,EasyPermissions.PermissionCallbacks,
             }else{
                 layoutWebUrl.visibility = View.GONE
             }
-
         }
-
         imgUrlDelete.setOnClickListener {
             webLink = ""
             tvWebLink.visibility = View.GONE
             imgUrlDelete.visibility = View.GONE
             layoutWebUrl.visibility = View.GONE
         }
-
         tvWebLink.setOnClickListener {
             var intent = Intent(Intent.ACTION_VIEW,Uri.parse(etWebLink.text.toString()))
             startActivity(intent)
         }
-
     }
     private fun updateNote(){
         launch {
-
             context?.let {
                 var notes = NotesDatabase.getDatabase(it).noteDao().getSpecificNote(noteId)
                 notes.title = etNoteTitle.text.toString()
@@ -172,15 +170,18 @@ class  CreateNoteFragment : BaseFragment() ,EasyPermissions.PermissionCallbacks,
                 notes.color = selectedColor
                 notes.imgPath = selectedImagePath
                 notes.webLink = webLink
-
                 NotesDatabase.getDatabase(it).noteDao().updateNote(notes)
+                //同步到后端
+                OKHttpUtils.get(
+                    "http://161.97.110.236:8080/portal/notes/updateNote.do?title=${notes.title}&subTitle=${notes.subTitle}&noteText=${notes.noteText}imgPath=${notes.imgPath}&webLink=${notes.webLink}&color=${notes.color}",
+                    OKHttpCallback()
+                )
                 etNoteTitle.setText("")
                 etNoteSubTitle.setText("")
                 etNoteDesc.setText("")
                 layoutImage.visibility = View.GONE
                 imgNote.visibility = View.GONE
                 tvWebLink.visibility = View.GONE
-
                 requireActivity().supportFragmentManager.popBackStack()
             }
         }
@@ -210,6 +211,14 @@ class  CreateNoteFragment : BaseFragment() ,EasyPermissions.PermissionCallbacks,
 
                 context?.let {
                     NotesDatabase.getDatabase(it).noteDao().insertNotes(notes)
+                    //同步到后端
+                    Log.d("Color","${notes.color}")
+
+                    OKHttpUtils.get(
+                        "http://161.97.110.236:8080/portal/notes/addNote.do?title=${notes.title}&" +
+                                "subTitle=${notes.subTitle}&noteText=${notes.noteText}&imgPath=${notes.imgPath}&webLink=${notes.webLink}&color=${notes.color}",
+                        OKHttpCallback()
+                    )
                     etNoteTitle.setText("")
                     etNoteSubTitle.setText("")
                     etNoteDesc.setText("")
@@ -236,11 +245,18 @@ class  CreateNoteFragment : BaseFragment() ,EasyPermissions.PermissionCallbacks,
 
         launch {
             context?.let {
+                var title= NotesDatabase.getDatabase(it).noteDao().getNoteTitle(noteId)
+                //后端同步删除
+                OKHttpUtils.get(
+                    "http://161.97.110.236:8080/portal/notes/deleteNote.do?title=${title}",
+                    OKHttpCallback()
+                )
                 NotesDatabase.getDatabase(it).noteDao().deleteSpecificNote(noteId)
                 requireActivity().supportFragmentManager.popBackStack()
             }
         }
     }
+
     private  val BroadcastReceiver:BroadcastReceiver=object :BroadcastReceiver(){
         override fun onReceive(context: Context?, intent: Intent?) {
             var actionColor=intent!!.getStringExtra("action")
@@ -353,8 +369,6 @@ class  CreateNoteFragment : BaseFragment() ,EasyPermissions.PermissionCallbacks,
                         imgNote.setImageBitmap(bitmap)
                         layoutImage.visibility=View.VISIBLE
                         imgNote.visibility=View.VISIBLE
-
-
                         selectedImagePath=getPathFromUri(selectedImageUrl)!!
 
                     }catch (e:Exception){

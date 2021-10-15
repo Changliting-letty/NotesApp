@@ -8,9 +8,12 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Headers.Companion.toHeaders
 
 object OKHttpUtils {
-    val client = OkHttpClient()
+
+    val  client=OkHttpClient().newBuilder().cookieJar(PersistenceCookieJar()).build()
+
 
     fun get(url: String, callback: OKHttpCallback) {
+
         callback.url = url
         val request = Request.Builder().url(url).build()
         client.newCall(request).enqueue(callback)

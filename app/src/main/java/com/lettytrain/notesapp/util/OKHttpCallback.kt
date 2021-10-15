@@ -15,6 +15,7 @@ class OKHttpCallback :Callback {
    override fun onResponse(call: Call,response: Response){
         Log.d("OKHttpCallback","url:${url}")
         result=  response.body?.string().toString()
+
         onFinish("success",result)
     }
 

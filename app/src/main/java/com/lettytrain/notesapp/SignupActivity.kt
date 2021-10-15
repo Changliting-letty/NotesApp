@@ -85,7 +85,7 @@ import kotlin.coroutines.CoroutineContext
                 }
     fun synchronousWithBackend(username:String,password:String) {
         OKHttpUtils.get(
-            "http://10.236.35.203:8080/portal/user/signup.do?userName=${username}&password=${password}",
+            "http://161.97.110.236:8080/portal/user/signup.do?userName=${username}&password=${password}",
             OKHttpCallback()
         )
 
