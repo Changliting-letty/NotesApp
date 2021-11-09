@@ -25,6 +25,10 @@
             android:id="@+id/navTask"
             android:icon="@drawable/nav_task"
             android:title="Tasks"/>
+        <item
+            android:id="@+id/navUnlogin"
+            android:title="@string/unLogin"
+            />
     </group>
 
 </menu>

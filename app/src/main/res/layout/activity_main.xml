@@ -7,15 +7,12 @@
     android:layout_height="match_parent">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/cord1"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-
-
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
@@ -25,18 +22,30 @@
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 app:layout_scrollFlags="scroll|enterAlways|snap" />
 
+
         </com.google.android.material.appbar.AppBarLayout>
 
 
-
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
+    <FrameLayout
+        android:id="@+id/frame_layout"
+        android:layout_width="match_parent"
+        android:layout_height="669dp"
+        android:layout_marginTop="55dp">
+        <fragment
+            android:id="@+id/placeNotesFragment"
+            android:name="com.lettytrain.notesapp.NotesHomeFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+           />
+        />
+    </FrameLayout>
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:menu="@menu/nav_menu"
-        app:headerLayout="@layout/nav_header"/>
-
+        app:headerLayout="@layout/nav_header"
+        />
 </androidx.drawerlayout.widget.DrawerLayout>

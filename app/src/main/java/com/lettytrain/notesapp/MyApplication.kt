@@ -6,15 +6,15 @@ import android.content.Context
 
 //获取全局Context
 
-class MyApplication:Application(){
+class MyApplication : Application() {
 
-    companion object{
+    companion object {
         @SuppressLint("staticFieldLeak")
-        lateinit var  context:Context
+        lateinit var context: Context
     }
 
     override fun onCreate() {
         super.onCreate()
-        context=applicationContext
+        context = applicationContext
     }
 }

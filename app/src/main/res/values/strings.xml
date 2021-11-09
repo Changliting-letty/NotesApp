@@ -9,6 +9,10 @@
     <string name="cancel">Cancel</string>
     <string name="storage_permission_text">This app needs access to your storage.</string>
     <string name="search">Search Your Notes</string>
+    <string name="noLogin">未登录</string>
+    <string name="gotoLogin">点击去登录</string>
+    <string name="unLogin">退出</string>
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

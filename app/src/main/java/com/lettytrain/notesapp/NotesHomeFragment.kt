@@ -16,21 +16,24 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.lettytrain.notesapp.adapter.NotesAdapter
 import com.lettytrain.notesapp.database.NotesDatabase
 import com.lettytrain.notesapp.entities.Notes
+import com.lettytrain.notesapp.entities.User
+import com.lettytrain.notesapp.util.SharedPreferencesUtil
+import com.lettytrain.notesapp.vo.UserVo
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.nav_header.*
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-
 /**
- 主界面
+主界面
  */
-class NotesHomeFragment :BaseFragment() {
+class NotesHomeFragment : BaseFragment() {
 
-    var arrNotes=ArrayList<Notes>()
-    var notesAdapter:NotesAdapter=NotesAdapter()
+    var arrNotes = ArrayList<Notes>()
+    var notesAdapter: NotesAdapter = NotesAdapter()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,6 +42,7 @@ class NotesHomeFragment :BaseFragment() {
 
         }
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,6 +50,7 @@ class NotesHomeFragment :BaseFragment() {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
+
     companion object {
         @JvmStatic
         fun newInstance() =
@@ -56,29 +61,35 @@ class NotesHomeFragment :BaseFragment() {
             }
     }
 
+    override fun onResume() {
+        super.onResume()
+//        //判断用户是否登录
+//        val isLogin = SharedPreferencesUtil.readBoolean("isLogin")
+//        if (isLogin) {
+//            //获取用户信息
+//            val userVo = SharedPreferencesUtil.readObject("user", UserVo::class.java) as UserVo
+//            tv1.setText(userVo.userName)
+//        }
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         recycler_view.setHasFixedSize(true)
 
-        recycler_view.layoutManager=StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
+        recycler_view.layoutManager =
+            StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         launch {
-            context?.let{
-//                val bundle=arguments
-//                var userId=bundle?.getInt("userId",-1)
-                val prefs=MyApplication.context.getSharedPreferences("session",Context.MODE_PRIVATE)
-                val userId=prefs.getInt("userId",-1)
-                var notes=NotesDatabase.getDatabase(it).noteDao().getAllNotesByUserId(userId!!)
-                //var notes=NotesDatabase.getDatabase(it).noteDao().getAllNotes()
+            context?.let {
+                val user = SharedPreferencesUtil.readObject("user",UserVo::class.java) as UserVo
+                var notes = NotesDatabase.getDatabase(it).noteDao().getAllNotesByUserId(user.userId!!)
                 notesAdapter!!.setData(notes)
-
-                arrNotes=notes as ArrayList<Notes>
-                recycler_view.adapter=notesAdapter
+                arrNotes = notes as ArrayList<Notes>
+                recycler_view.adapter = notesAdapter
             }
         }
         notesAdapter.setOnClickListener(onClicked)
-        fabBtnCreateNote.setOnClickListener{
-//            val userId=savedInstanceState?.getInt("userId",-1)
+        fabBtnCreateNote.setOnClickListener {
+            //            val userId=savedInstanceState?.getInt("userId",-1)
 //            var fragment:Fragment
 //            var bundle=Bundle()  //用于传递数据
 //            if (userId != null) {
@@ -91,15 +102,15 @@ class NotesHomeFragment :BaseFragment() {
         }
         //搜索笔记
 
-        search_view.setOnQueryTextListener(object :SearchView.OnQueryTextListener{
+        search_view.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                var tempArr=ArrayList<Notes>()
-                for (arr in arrNotes){
-                    if (arr.title!!.toLowerCase(Locale.getDefault()).contains(newText.toString())){
+                var tempArr = ArrayList<Notes>()
+                for (arr in arrNotes) {
+                    if (arr.title!!.toLowerCase(Locale.getDefault()).contains(newText.toString())) {
                         tempArr.add(arr)
                     }
                 }
@@ -110,18 +121,21 @@ class NotesHomeFragment :BaseFragment() {
         })
 
     }
-    fun replaceFragment(fragment: Fragment){
-        val fragmentTransaction=activity!!.supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.drawerLayout,fragment).addToBackStack(fragment.javaClass.simpleName)
+
+    fun replaceFragment(fragment: Fragment) {
+        val fragmentTransaction = activity!!.supportFragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.drawerLayout, fragment)
+            .addToBackStack(fragment.javaClass.simpleName)
         fragmentTransaction.commit()
     }
-    private  val  onClicked=object :NotesAdapter.OnItemClickListener{
+
+    private val onClicked = object : NotesAdapter.OnItemClickListener {
         override fun onClicked(noteId: Int) {
-            var fragment:Fragment
-            var bundle=Bundle()  //用于传递数据
-            bundle.putInt("noteId",noteId)
-            fragment=CreateNoteFragment.newInstance()
-            fragment.arguments=bundle
+            var fragment: Fragment
+            var bundle = Bundle()  //用于传递数据
+            bundle.putInt("noteId", noteId)
+            fragment = CreateNoteFragment.newInstance()
+            fragment.arguments = bundle
             replaceFragment(fragment)
         }
     }

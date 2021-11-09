@@ -6,18 +6,32 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
     tools:context=".MainActivity">
-    <TextView
-        android:id="@+id/tv1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/_15ssp"
-        android:paddingStart="@dimen/_10sdp"
-        android:paddingTop="@dimen/_10sdp"
-        android:text="@string/notes"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:textColor="@color/ColorWhite"/>
+
+
+<!--        <ImageView-->
+<!--            android:id="@+id/iv1"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:textSize="@dimen/_15ssp"-->
+<!--            android:paddingStart="@dimen/_10sdp"-->
+<!--            android:paddingTop="@dimen/_10sdp"-->
+<!--            android:src="@drawable/ic_person"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            android:textColor="@color/ColorWhite"/>-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/tv1"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:paddingStart="@dimen/_10sdp"-->
+<!--        android:paddingTop="@dimen/_10sdp"-->
+<!--        android:text="@string/noLogin"-->
+<!--        android:textColor="@color/ColorWhite"-->
+<!--        android:textSize="@dimen/_15ssp"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintLeft_toRightOf="@+id/iv1"/>-->
+
     <SearchView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -40,45 +54,12 @@
         app:layout_constraintTop_toBottomOf="@+id/search_view"
         app:layout_constraintEnd_toEndOf="parent"
         android:id="@+id/recycler_view"/>
-
-<!--    <LinearLayout-->
-<!--        android:id="@+id/line1"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:background="@color/colorPrimary"-->
-<!--        android:orientation="horizontal"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        android:padding="@dimen/_10sdp">-->
-
-<!--        <ImageView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:src="@drawable/ic_tick"-->
-<!--            android:tint="@color/ColorWhite"/>-->
-<!--        <ImageView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="@dimen/_10sdp"-->
-<!--            android:layout_marginEnd="@dimen/_10sdp"-->
-<!--            android:src="@drawable/ic_image"-->
-<!--            android:tint="@color/ColorWhite"/>-->
-<!--        <ImageView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:src="@drawable/ic_link"-->
-<!--            android:tint="@color/ColorWhite"/>-->
-
-<!--    </LinearLayout>-->
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabBtnCreateNote"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_20sdp"
         android:layout_marginBottom="@dimen/_20sdp"
-
         android:src="@drawable/ic_add"
         android:tint="@color/ColorWhite"
         app:elevation="8dp"
