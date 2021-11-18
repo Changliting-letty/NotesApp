@@ -9,6 +9,9 @@ apply plugin: 'kotlin-kapt'
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.0"
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
     defaultConfig {
         applicationId "com.lettytrain.notesapp"
         minSdkVersion 21
@@ -71,6 +74,13 @@ dependencies {
     // 为了与后端交互
     implementation 'com.squareup.okhttp3:okhttp:4.9.1'
     implementation 'com.google.code.gson:gson:2.8.5'
+    implementation "org.jetbrains.anko:anko:$anko_version"
+    def work_version = '2.3.2'
+    implementation "androidx.work:work-runtime:$work_version"
+//    implementation("androidx.work:work-runtime-ktx:$work_version")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.12.1")
+
+
 
 
 }

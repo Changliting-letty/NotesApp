@@ -29,6 +29,10 @@
             android:id="@+id/navUnlogin"
             android:title="@string/unLogin"
             />
+        <item
+            android:id="@+id/navLogOff"
+            android:title="@string/logOff"
+            />
     </group>
 
 </menu>

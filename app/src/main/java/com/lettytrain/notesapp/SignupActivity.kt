@@ -62,7 +62,7 @@ class SignupActivity : AppCompatActivity() {
                                 confirm.setText("")
                                 Looper.loop()
 
-                            } else if (status ==ResponseCode.IS_SIGNUP_SUCCESS.num) {
+                            } else if (status ==ResponseCode.IS_SUCCESS.num) {
                                 Looper.prepare()
                                 username.setText("")
                                 password.setText("")

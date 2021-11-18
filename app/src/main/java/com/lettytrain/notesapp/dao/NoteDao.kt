@@ -14,12 +14,12 @@ interface NoteDao {
     suspend fun getAllNotesByUserId(userId:Int):List<Notes>
 
     @Query("SELECT * FROM notes WHERE id =:id")
-    suspend fun getSpecificNote(id:Int) : Notes
+    fun getSpecificNote(id:Int) : Notes
     @Query("SELECT title FROM notes WHERE id=:id")
     suspend fun getNoteTitle(id:Int):String
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertNotes(note:Notes)
+    suspend fun insertNotes(note:Notes):Long
 
     @Delete
     suspend fun deleteNote(note:Notes)

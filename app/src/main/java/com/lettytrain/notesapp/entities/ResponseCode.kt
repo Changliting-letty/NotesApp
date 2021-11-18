@@ -7,8 +7,8 @@ package com.lettytrain.notesapp.entities
  */
 enum class ResponseCode(var num:Int) {
     //状态码管理
-    IS_SIGNUP_SUCCESS(0),// "注册成功"
-    IS_LOGIN_SUCCESS(1),  //"登录成功"
+
+    IS_SUCCESS(0),  //"操作成功"
     USERNAME_NOT_EMPTY(2), //"用户名不能为空"
     PASSWORD_NOT_EMPTY(3), //"密码不能为空"
     USERNAME_NOT_EXISTS(4), //"用户名不存在"

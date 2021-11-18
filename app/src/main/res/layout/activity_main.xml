@@ -5,6 +5,12 @@
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <ProgressBar
+        android:id="@+id/progressbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/cord1"
@@ -28,16 +34,10 @@
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
     <FrameLayout
-        android:id="@+id/frame_layout"
+        android:id="@+id/placeNotesFragment"
         android:layout_width="match_parent"
         android:layout_height="669dp"
         android:layout_marginTop="55dp">
-        <fragment
-            android:id="@+id/placeNotesFragment"
-            android:name="com.lettytrain.notesapp.NotesHomeFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-           />
         />
     </FrameLayout>
     <com.google.android.material.navigation.NavigationView
