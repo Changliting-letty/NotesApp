@@ -13,8 +13,11 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import androidx.lifecycle.Observer
 
-
-//获取全局Context
+/**
+ * desc:
+ * 获取全局Context
+ * 定期执行同步
+ * */
 
 class MyApplication : Application() {
 
@@ -26,8 +29,8 @@ class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         context = applicationContext
-        //每间隔一小时执行同步
-        val request = PeriodicWorkRequest.Builder(SynToRemoteWorker::class.java,15, TimeUnit.MINUTES).build()
+        val request =
+            PeriodicWorkRequest.Builder(SynToRemoteWorker::class.java, 15, TimeUnit.MINUTES).build()
         WorkManager.getInstance(this).enqueue(request)
     }
 }

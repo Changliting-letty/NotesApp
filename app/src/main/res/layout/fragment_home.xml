@@ -7,31 +7,6 @@
     android:background="@color/colorPrimaryDark"
     tools:context=".MainActivity">
 
-
-<!--        <ImageView-->
-<!--            android:id="@+id/iv1"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:textSize="@dimen/_15ssp"-->
-<!--            android:paddingStart="@dimen/_10sdp"-->
-<!--            android:paddingTop="@dimen/_10sdp"-->
-<!--            android:src="@drawable/ic_person"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            android:textColor="@color/ColorWhite"/>-->
-
-<!--    <TextView-->
-<!--        android:id="@+id/tv1"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:paddingStart="@dimen/_10sdp"-->
-<!--        android:paddingTop="@dimen/_10sdp"-->
-<!--        android:text="@string/noLogin"-->
-<!--        android:textColor="@color/ColorWhite"-->
-<!--        android:textSize="@dimen/_15ssp"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintLeft_toRightOf="@+id/iv1"/>-->
-
     <SearchView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

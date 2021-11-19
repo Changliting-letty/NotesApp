@@ -48,8 +48,6 @@ import org.jetbrains.anko.support.v4.uiThread
 import java.util.*
 import kotlin.collections.ArrayList
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 /**
 主界面
  */
@@ -84,14 +82,12 @@ class NotesHomeFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("onViewCreated", "执行一次")
         recycler_view.setHasFixedSize(true)
         recycler_view.layoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         if (SharedPreferenceUtil.readBoolean("isLogin") && SharedPreferenceUtil.readBoolean("isLoginFirst")) {
             SharedPreferenceUtil.putBoolean("isLoginFirst", false)
             initData()
-
         }
         launch {
 
@@ -105,20 +101,16 @@ class NotesHomeFragment : BaseFragment() {
                 arrNotes = notes as ArrayList<Notes>
                 recycler_view.adapter = notesAdapter
             }
-
         }
-
         notesAdapter.setOnClickListener(onClicked)
         fabBtnCreateNote.setOnClickListener {
             replaceFragment(CreateNoteFragment.newInstance())
         }
-        //搜索笔记
-
+        //搜索
         search_view.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return true
             }
-
             override fun onQueryTextChange(newText: String?): Boolean {
                 var tempArr = ArrayList<Notes>()
                 for (arr in arrNotes) {
@@ -137,9 +129,8 @@ class NotesHomeFragment : BaseFragment() {
     private val onClicked = object : NotesAdapter.OnItemClickListener {
         override fun onClicked(noteId: Int) {
             var fragment: Fragment
-            var bundle = Bundle()  //用于传递数据
+            var bundle = Bundle()
             bundle.putInt("noteId", noteId)
-            Log.d("createonclick", "notesId${noteId}")
             fragment = CreateNoteFragment.newInstance()
             fragment.arguments = bundle
             replaceFragment(fragment)
@@ -152,32 +143,6 @@ class NotesHomeFragment : BaseFragment() {
         fragmentTransaction.commit()
     }
 
-    //    private fun  savedToLocalDb(list:List<NotesVo>) {
-    //版本1
-//        for (notesVo in list) {
-//            var note = Notes()
-//            note.userId = notesVo.userId
-//            note.title = notesVo.title
-//            note.subTitle = notesVo.subTitle
-//            note.noteText = notesVo.noteText
-//            note.imgPath = notesVo.imgPath
-//            note.webLink = notesVo.webLink
-//            note.color = notesVo.color
-//            launch {
-//                var id= withContext(Dispatchers.IO ){
-//                    NotesDatabase.getDatabase(MyApplication.context).noteDao().insertNotes(note)
-//                }
-//                var idmap = IdMap()
-//                idmap.offlineId = id.toInt()
-//                idmap.onlineId = notesVo.id
-//                val idmap_id=withContext(Dispatchers.IO){
-//                    NotesDatabase.getDatabase(MyApplication.context).idmapDao().insertMap(idmap)
-//                }
-//            }
-//
-//
-//        }
-//    }
     private fun savedToLocalDb(list: List<NotesVo>) {
         launch {
             //2.已经获取了服务端的所有notes，与本地已经有的note进行比较
@@ -188,23 +153,20 @@ class NotesHomeFragment : BaseFragment() {
             if (idmaps.size == 0) {
                 //本地没有任何notes的情况，直接将服务端的所有notes写入本地
                 localNoteExits(list)
-                // Log.d("从服务端更新","本地没有idmap")
             } else {
-//            //本地存在notes的情况
-//            //收集本地存在的notes的id,与服务端的notes进行比较
+                //本地存在notes的情况
+                //收集本地存在的notes的id,与服务端的notes进行比较
                 var localNoteExitList = ArrayList<NotesVo>()
                 var local_onlineId_list = ArrayList<Int>()
                 for (idmap in idmaps) {
-                    //online_id为-1即本地存在，服务端不存在的情况不用在此处理，后期会定期更新到服务端
+                    //online_id为-1即本地存在，服务端不存在的情况，不用在此处理，后期会定期更新到服务端
                     if (idmap.onlineId != -1) {
                         local_onlineId_list.add(idmap.onlineId!!)
                     }
                 }
-//            //比较
                 for (noteVo in list) {
                     if (local_onlineId_list.contains(noteVo.id)) {
                         //2.1 本地和服务端都有，比较谁更新
-                        //这里加上withcontex就出错
                         var noteLocalId =
                             NotesDatabase.getDatabase(MyApplication.context).idmapDao()
                                 .selectOfflineId(noteVo.id!!)
@@ -287,39 +249,14 @@ class NotesHomeFragment : BaseFragment() {
         }
     }
 
-    fun uiUpdate(notesVoList: List<NotesVo>) {
-        launch {
-            savedToLocalDb(notesVoList)
-        }
-        //适用于第一次用本设备进行登录的情况
-        launch {
-            val notes=ArrayList<Notes>()
-            for (notesVo in notesVoList) {
-                var note = Notes()
-                note.userId = notesVo.userId
-                note.title = notesVo.title
-                note.subTitle = notesVo.subTitle
-                note.noteText = notesVo.noteText
-                note.imgPath = notesVo.imgPath
-                note.webLink = notesVo.webLink
-                note.color = notesVo.color
-                notes.add(note)
-            }
-            notesAdapter!!.setData(notes)
-            arrNotes = notes
-            recycler_view.adapter = notesAdapter
-            recycler_view.adapter = notesAdapter
-        }
-    }
-
     fun initData() {
         launch(Dispatchers.IO) {
             OKHttpUtils.get(
-                "http://10.236.11.105:8080/portal/notes/searchAllNotes.do",
+                "http://161.97.110.236:8080/portal/notes/searchAllNotes.do",
                 object : OKHttpCallback() {
                     override fun onFinish(status1: String, result: String) {
                         super.onFinish(status1, result)
-                        //执行成功才执行一下逻辑
+                        //执行成功才执行以下逻辑
                         if (status1.equals("success")) {
                             val turnsType =
                                 object : TypeToken<ServerResponse<List<NotesVo>>>() {}.type

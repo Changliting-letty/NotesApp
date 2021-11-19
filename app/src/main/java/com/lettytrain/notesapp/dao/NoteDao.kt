@@ -8,25 +8,26 @@ import com.lettytrain.notesapp.entities.Notes
 interface NoteDao {
 
     @Query("SELECT * FROM notes ORDER BY id DESC")
-    suspend fun getAllNotes() : List<Notes>
+    suspend fun getAllNotes(): List<Notes>
 
     @Query("SELECT * FROM notes where userId=:userId ORDER BY id DESC")
-    suspend fun getAllNotesByUserId(userId:Int):List<Notes>
+    suspend fun getAllNotesByUserId(userId: Int): List<Notes>
 
     @Query("SELECT * FROM notes WHERE id =:id")
-    fun getSpecificNote(id:Int) : Notes
+    fun getSpecificNote(id: Int): Notes
+
     @Query("SELECT title FROM notes WHERE id=:id")
-    suspend fun getNoteTitle(id:Int):String
+    suspend fun getNoteTitle(id: Int): String
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertNotes(note:Notes):Long
+    suspend fun insertNotes(note: Notes): Long
 
     @Delete
-    suspend fun deleteNote(note:Notes)
+    suspend fun deleteNote(note: Notes)
 
     @Query("DELETE FROM notes WHERE id =:id")
-    suspend fun deleteSpecificNote(id:Int)
+    suspend fun deleteSpecificNote(id: Int)
 
     @Update
-    suspend fun updateNote(note:Notes)
+    suspend fun updateNote(note: Notes)
 }

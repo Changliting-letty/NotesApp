@@ -48,7 +48,11 @@ class NotesAdapter() :
         if (arrayList[position].color != null) {
             holder.itemView.cardView.setCardBackgroundColor(Color.parseColor(arrayList[position].color))
         } else {
-            holder.itemView.cardView.setCardBackgroundColor(MyApplication.context.resources.getColor(R.color.ColorLightBlack))
+            holder.itemView.cardView.setCardBackgroundColor(
+                MyApplication.context.resources.getColor(
+                    R.color.ColorLightBlack
+                )
+            )
         }
         if (arrayList[position].imgPath != null) {
             holder.itemView.imgNote.setImageBitmap(BitmapFactory.decodeFile(arrayList[position].imgPath))
@@ -58,7 +62,7 @@ class NotesAdapter() :
         }
 
         holder.itemView.cardView.setOnClickListener {
-            Log.d("notesAdapter","notesId${arrayList[position].id!!}")
+            Log.d("notesAdapter", "notesId${arrayList[position].id!!}")
             listener!!.onClicked(arrayList[position].id!!)
         }
 

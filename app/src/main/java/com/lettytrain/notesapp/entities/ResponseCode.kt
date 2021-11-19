@@ -1,12 +1,7 @@
 package com.lettytrain.notesapp.entities
 
-/**
- * author: Chang Liting
- * created on: 2021/11/6 9:08
- * description:
- */
-enum class ResponseCode(var num:Int) {
-    //状态码管理
+
+enum class ResponseCode(var num: Int) {
 
     IS_SUCCESS(0),  //"操作成功"
     USERNAME_NOT_EMPTY(2), //"用户名不能为空"
@@ -16,9 +11,9 @@ enum class ResponseCode(var num:Int) {
     PARAMTER_NOT_EMPTY(6), //"参数不能为空"
     USERNAME_EXITS(7), //"用户名已存在"
     SIGNUP_FAIL(8),  //"注册失败"
-    NEED_LOGIN(9 ),//"用户需要登录"
+    NEED_LOGIN(9),//"用户需要登录"
     NOTE_NOT_EMPTY(10), //"Note不能为空"
-    CREATENOTE_FALI(11 ),//Note新建失败"
+    CREATENOTE_FALI(11),//Note新建失败"
     UPDATENOTE_FAIL(12), //"Note修改失败"
     DELETENOTE_FAIL(13)//"Notes删除失败"
 }

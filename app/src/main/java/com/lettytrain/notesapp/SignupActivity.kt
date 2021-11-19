@@ -38,13 +38,11 @@ class SignupActivity : AppCompatActivity() {
                 password.setText("")
                 confirm.setText("")
             } else {
-                //发送网络请求，用onfinish拿到结果
                 OKHttpUtils.get(
-                    "http://10.236.11.105:8080/portal/user/signup.do?userName=${username.text.toString()}&password=${password.text.toString()}",
+                    "http://161.97.110.236:8080/portal/user/signup.do?userName=${username.text.toString()}&password=${password.text.toString()}",
                     object : OKHttpCallback() {
                         override fun onFinish(status1: String, result: String) {
                             super.onFinish(status1, result)
-                            //解析数据
 
                             var jsobj = Gson().fromJson(result, ServerResponse::class.java)
                             val status = jsobj.status
@@ -78,8 +76,6 @@ class SignupActivity : AppCompatActivity() {
                                     Intent(MyApplication.context, LoginActivity::class.java)
                                 startActivity(intent)
                                 Looper.loop()
-                                // supportFragmentManager.popBackStack()
-                                //设置有个交互按钮，让用户选择是去登录还是继续留在这里
                             } else {
                                 //链接失败
                                 Looper.prepare()
@@ -91,6 +87,9 @@ class SignupActivity : AppCompatActivity() {
                                 username.setText("")
                                 password.setText("")
                                 confirm.setText("")
+                                val intent =
+                                    Intent(MyApplication.context, LoginActivity::class.java)
+                                startActivity(intent)
                                 Looper.loop()
                             }
                         }
@@ -98,11 +97,7 @@ class SignupActivity : AppCompatActivity() {
                 )
             }
         }
-
-
     }
-
-
     override fun onDestroy() {
         super.onDestroy()
     }

@@ -7,19 +7,15 @@ import java.io.Serializable
 
 
 @Entity(tableName = "Users")
-class User: Serializable {
+class User : Serializable {
 
     @PrimaryKey(autoGenerate = true)
-    var id:Int? = null
+    var id: Int? = null
     @ColumnInfo(name = "user_name")
-    var user_name:String?=null
+    var user_name: String? = null
 
     @ColumnInfo(name = "password")
-    var password:String?=null
-//    @ColumnInfo(name = "createTime")
-//    var creatTime:String?=null
-//    @ColumnInfo(name = "updateTime")
-//    var updateTime:String?=null
+    var password: String? = null
 
 
 

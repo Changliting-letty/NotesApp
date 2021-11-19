@@ -30,7 +30,7 @@ class NoteBottemSheetFragment : BottomSheetDialogFragment() {
         }
     }
 
-    var selectedColor = "#171C26"
+    var selectedColor =  MyApplication.context.resources.getString(R.color.ColorLightBlack.dec())
     override fun setupDialog(dialog: Dialog, style: Int) {
         super.setupDialog(dialog, style)
 
@@ -87,7 +87,7 @@ class NoteBottemSheetFragment : BottomSheetDialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d("notebottem","notesId${noteId}")
+        Log.d("notebottem", "notesId${noteId}")
         super.onViewCreated(view, savedInstanceState)
         if (noteId != -1) {
             //     Log.d("MMMMMMM","what's wrong")

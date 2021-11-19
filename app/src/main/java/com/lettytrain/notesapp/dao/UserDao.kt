@@ -9,20 +9,21 @@ interface UserDao {
 
 
     @Query("SELECT count(*) FROM users where user_name=:username")
-    suspend fun getUsers(username: String) : Int
+    suspend fun getUsers(username: String): Int
 
     @Query("SELECT password  FROM users WHERE user_name=:user_name")
-  suspend  fun getPassword(user_name:String) : String
+    suspend fun getPassword(user_name: String): String
+
     @Query("SELECT id FROM users WHERE user_name=:user_name")
-    suspend fun  getUserID(user_name: String):Int
+    suspend fun getUserID(user_name: String): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-  suspend fun insertUsers(user: User)
+    suspend fun insertUsers(user: User)
 
 
     @Query("DELETE FROM users WHERE user_name =:user_name")
-   suspend  fun deleteSpecificUser(user_name:String)
+    suspend fun deleteSpecificUser(user_name: String)
 
     @Update
-    suspend  fun updateNote(user:User)
+    suspend fun updateNote(user: User)
 }

@@ -12,7 +12,7 @@ import com.lettytrain.notesapp.entities.IdMap
 import com.lettytrain.notesapp.entities.Notes
 
 
-@Database(entities = [Notes::class,IdMap::class, Asyn::class], version = 1, exportSchema = false)
+@Database(entities = [Notes::class, IdMap::class, Asyn::class], version = 1, exportSchema = false)
 abstract class NotesDatabase : RoomDatabase() {
 
     companion object {
@@ -31,10 +31,10 @@ abstract class NotesDatabase : RoomDatabase() {
         }
     }
 
-    abstract fun noteDao():NoteDao
+    abstract fun noteDao(): NoteDao
 
-    abstract fun idmapDao():IdMapDao
+    abstract fun idmapDao(): IdMapDao
 
-    abstract  fun  asynDao():AsynDao
+    abstract fun asynDao(): AsynDao
 
 }

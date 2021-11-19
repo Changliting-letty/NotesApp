@@ -3,27 +3,29 @@ package com.lettytrain.notesapp.dao
 import androidx.room.*
 import com.lettytrain.notesapp.entities.Asyn
 
-/**
- * author: Chang Liting
- * created on: 2021/11/12 15:42
- * description:
- */
+
 @Dao
 interface AsynDao {
     @Query("SELECT * FROM asyn")
-     fun selectAll(): List<Asyn>
+    fun selectAll(): List<Asyn>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-     fun insertOne(asyn: Asyn)
+    fun insertOne(asyn: Asyn)
+
     @Delete
-     fun deleteOne(asyn: Asyn)
+    fun deleteOne(asyn: Asyn)
+
     @Query("DELETE FROM asyn where offlineId=:offline_id ")
-     fun  deleteByOfflineId(offline_id:Int)
+    fun deleteByOfflineId(offline_id: Int)
+
     @Query("DELETE FROM asyn where onlineId=:online_id ")
-    fun  deleteOneByOnlineId(online_id:Int)
+    fun deleteOneByOnlineId(online_id: Int)
+
     @Query("SELECT COUNT(*) FROM asyn  WHERE  offlineId=:offline_id")
-    fun  isExist(offline_id:Int):Int
+    fun isExist(offline_id: Int): Int
+
     @Query("UPDATE asyn SET time=:newTime WHERE offlineId=:offline_id")
-    fun updateTime(offline_id: Int,newTime:String)
+    fun updateTime(offline_id: Int, newTime: String)
 
 
 }

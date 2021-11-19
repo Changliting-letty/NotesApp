@@ -46,6 +46,10 @@ import java.util.regex.Pattern
 import kotlinx.android.synthetic.main.fragment_create_note.layoutWebUrl as layoutWebUrl1
 import kotlinx.android.synthetic.main.fragment_notes_bottom_sheet.layoutImage as layoutImage1
 
+/**
+ *
+ * 本地操作，全局同步
+ * */
 class CreateNoteFragment : BaseFragment(), EasyPermissions.PermissionCallbacks,
     EasyPermissions.RationaleCallbacks {
 
@@ -89,12 +93,13 @@ class CreateNoteFragment : BaseFragment(), EasyPermissions.PermissionCallbacks,
         val user = SharedPreferenceUtil.readObject("user", UserVo::class.java) as UserVo
 
         val userId = user.userId!!
-        Log.d("createonViewCreated","notesId${noteId}")
+        Log.d("createonViewCreated", "notesId${noteId}")
         if (noteId != -1) {
             launch {
                 context?.let {
-                    var notes = withContext(Dispatchers.IO){
-                        NotesDatabase.getDatabase(MyApplication.context).noteDao().getSpecificNote(noteId)
+                    var notes = withContext(Dispatchers.IO) {
+                        NotesDatabase.getDatabase(MyApplication.context).noteDao()
+                            .getSpecificNote(noteId)
                     }
                     if (notes.color != null) {
                         colorView.setBackgroundColor(Color.parseColor(notes.color))
@@ -188,49 +193,50 @@ class CreateNoteFragment : BaseFragment(), EasyPermissions.PermissionCallbacks,
     private fun updateNote() {
         launch {
 
-                var notes = withContext(Dispatchers.IO){
-                    NotesDatabase.getDatabase(MyApplication.context).noteDao().getSpecificNote(noteId)
+            var notes = withContext(Dispatchers.IO) {
+                NotesDatabase.getDatabase(MyApplication.context).noteDao().getSpecificNote(noteId)
+            }
+            notes.title = etNoteTitle.text.toString()
+            notes.subTitle = etNoteSubTitle.text.toString()
+            notes.noteText = etNoteDesc.text.toString()
+            notes.updateTime = currentDate
+            notes.color = selectedColor
+            notes.imgPath = selectedImagePath
+            notes.webLink = webLink
+            //本地更新
+            withContext(Dispatchers.IO) {
+                NotesDatabase.getDatabase(MyApplication.context).noteDao().updateNote(notes)
+            }
+            //更新同步表
+            val idMap = withContext(Dispatchers.IO) {
+                NotesDatabase.getDatabase(MyApplication.context).idmapDao().selectIdmap(noteId)
+            }
+            if (idMap.onlineId != -1) {
+                //note已经add到后端，直接添加update记录
+                val user = SharedPreferenceUtil.readObject("user", User::class.java)
+                var asyn = Asyn()
+                asyn.userId = user.id
+                asyn.offlineId = noteId
+                asyn.onlineId = idMap.onlineId
+                asyn.operation = "update"
+                asyn.time = currentDate
+                withContext(Dispatchers.IO) {
+                    //存储到本地
+                    NotesDatabase.getDatabase(MyApplication.context).asynDao().insertOne(asyn)
                 }
-                notes.title = etNoteTitle.text.toString()
-                notes.subTitle = etNoteSubTitle.text.toString()
-                notes.noteText = etNoteDesc.text.toString()
-                notes.updateTime = currentDate
-                notes.color = selectedColor
-                notes.imgPath = selectedImagePath
-                notes.webLink = webLink
-                //本地更新
-                withContext(Dispatchers.IO){
-                    NotesDatabase.getDatabase(MyApplication.context).noteDao().updateNote(notes)
+            } else {
+                //修改asyn的add记录的time
+                withContext(Dispatchers.IO) {
+                    NotesDatabase.getDatabase(MyApplication.context).asynDao()
+                        .updateTime(noteId, currentDate!!)
                 }
-                //更新同步表
-                val idMap= withContext(Dispatchers.IO){
-                    NotesDatabase.getDatabase(MyApplication.context).idmapDao().selectIdmap(noteId)
-                }
-                if (idMap.onlineId!=-1){
-                    //note已经add到后端，直接添加update记录
-                    val user=SharedPreferenceUtil.readObject("user",User::class.java)
-                    var asyn=Asyn()
-                    asyn.userId=user.id
-                    asyn.offlineId=noteId
-                    asyn.onlineId=idMap.onlineId
-                    asyn.operation="update"
-                    asyn.time=currentDate
-                    withContext(Dispatchers.IO){
-                        //存储到本地
-                        NotesDatabase.getDatabase(MyApplication.context).asynDao().insertOne(asyn)
-                    }
-                }else{
-                    //修改asyn的add记录的time
-                    withContext(Dispatchers.IO){
-                        NotesDatabase.getDatabase(MyApplication.context).asynDao().updateTime(noteId,currentDate!!)
-                    }
-                }
-                etNoteTitle.setText("")
-                etNoteSubTitle.setText("")
-                etNoteDesc.setText("")
-                layoutImage.visibility = View.GONE
-                imgNote.visibility = View.GONE
-                tvWebLink.visibility = View.GONE
+            }
+            etNoteTitle.setText("")
+            etNoteSubTitle.setText("")
+            etNoteDesc.setText("")
+            layoutImage.visibility = View.GONE
+            imgNote.visibility = View.GONE
+            tvWebLink.visibility = View.GONE
             val intent = Intent(MyApplication.context, MainActivity::class.java)
             startActivity(intent)
         }
@@ -246,7 +252,7 @@ class CreateNoteFragment : BaseFragment(), EasyPermissions.PermissionCallbacks,
         if (etNoteDesc.text.isNullOrEmpty()) {
             Toast.makeText(context, "Note Description  must not be null", Toast.LENGTH_SHORT).show()
         } else {
-            launch (Dispatchers.IO){
+            launch(Dispatchers.IO) {
 
                 var notes = Notes()
                 notes.title = etNoteTitle.text.toString()
@@ -258,35 +264,35 @@ class CreateNoteFragment : BaseFragment(), EasyPermissions.PermissionCallbacks,
                 notes.imgPath = selectedImagePath
                 notes.webLink = webLink
                 notes.userId = userId
-                val offline_id= NotesDatabase.getDatabase(MyApplication.context).noteDao().insertNotes(notes)
-                var idmap=IdMap()
-                idmap.userId=userId
-                idmap.offlineId=offline_id.toInt()
-                idmap.onlineId=-1
-                val idmap_id=NotesDatabase.getDatabase(MyApplication.context).idmapDao().insertMap(idmap)
-                Log.d("create","idmap_id${idmap_id.toInt()}已经插入成功")
-                    var asyn=Asyn()
-                    asyn.userId=userId
-                    asyn.offlineId=offline_id.toInt()
-                    asyn.onlineId=-1
-                    asyn.operation="add"
-                    asyn.time=currentDate
+                val offline_id =
+                    NotesDatabase.getDatabase(MyApplication.context).noteDao().insertNotes(notes)
+                var idmap = IdMap()
+                idmap.userId = userId
+                idmap.offlineId = offline_id.toInt()
+                idmap.onlineId = -1
+                val idmap_id =
+                    NotesDatabase.getDatabase(MyApplication.context).idmapDao().insertMap(idmap)
+                var asyn = Asyn()
+                asyn.userId = userId
+                asyn.offlineId = offline_id.toInt()
+                asyn.onlineId = -1
+                asyn.operation = "add"
+                asyn.time = currentDate
 
-                        //存储到本地
-                        NotesDatabase.getDatabase(MyApplication.context).asynDao().insertOne(asyn)
+                //存储到本地
+                NotesDatabase.getDatabase(MyApplication.context).asynDao().insertOne(asyn)
 
-                    etNoteTitle.setText("")
-                    etNoteSubTitle.setText("")
-                    etNoteDesc.setText("")
-                    layoutImage.visibility = View.GONE
-                    imgNote.visibility = View.GONE
-                    tvWebLink.visibility = View.GONE
-         //      requireActivity().supportFragmentManager.popBackStack()
+                etNoteTitle.setText("")
+                etNoteSubTitle.setText("")
+                etNoteDesc.setText("")
+                layoutImage.visibility = View.GONE
+                imgNote.visibility = View.GONE
+                tvWebLink.visibility = View.GONE
                 val intent = Intent(MyApplication.context, MainActivity::class.java)
                 startActivity(intent)
-                }
             }
         }
+    }
 
     private fun checkWebUrl() {
         if (Patterns.WEB_URL.matcher(etWebLink.text.toString()).matches()) {
@@ -300,23 +306,21 @@ class CreateNoteFragment : BaseFragment(), EasyPermissions.PermissionCallbacks,
         }
     }
 
-   private fun deleteNote(note_id:Int) {
+    private fun deleteNote(note_id: Int) {
 
         launch {
-               //更新同步表
-                Log.d("deletenote函数内","noteid:${note_id}")
-               val idMap= withContext(Dispatchers.IO){
-                   NotesDatabase.getDatabase(MyApplication.context).idmapDao().selectIdmap(note_id)
-               }
-            if (idMap==null){
-                Toast.makeText(MyApplication.context,"删除失败，请重试",Toast.LENGTH_SHORT).show()
-
-            }else{
-                 Log.d("deletenote","noteid:${note_id},idmap.onlineId:${idMap.onlineId}")
-                val user=SharedPreferenceUtil.readObject("user",User::class.java)
+            //更新同步表
+            val idMap = withContext(Dispatchers.IO) {
+                NotesDatabase.getDatabase(MyApplication.context).idmapDao().selectIdmap(note_id)
+            }
+            if (idMap == null) {
+                Toast.makeText(MyApplication.context, "删除失败，请重试", Toast.LENGTH_SHORT).show()
+            } else {
+                Log.d("deletenote", "noteid:${note_id},idmap.onlineId:${idMap.onlineId}")
+                val user = SharedPreferenceUtil.readObject("user", User::class.java)
                 //如果还没更新到后端，就不需要执行后端同步
-                if (idMap.onlineId!=-1) {
-                    //上传过
+                if (idMap.onlineId != -1) {
+                    //note已经上传过服务端
                     val count = withContext(Dispatchers.IO) {
                         NotesDatabase.getDatabase(MyApplication.context).asynDao().isExist(note_id)
                     }
@@ -329,35 +333,35 @@ class CreateNoteFragment : BaseFragment(), EasyPermissions.PermissionCallbacks,
                         }
                     }
                     //新增delete记录
-                    var asyn=Asyn()
-                    asyn.userId=user.id
-                    asyn.offlineId=note_id
-                    asyn.onlineId=idMap.onlineId
-                    asyn.operation="delete"
-                    asyn.time=currentDate
-                    withContext(Dispatchers.IO){
+                    var asyn = Asyn()
+                    asyn.userId = user.id
+                    asyn.offlineId = note_id
+                    asyn.onlineId = idMap.onlineId
+                    asyn.operation = "delete"
+                    asyn.time = currentDate
+                    withContext(Dispatchers.IO) {
                         //存储到本地
                         NotesDatabase.getDatabase(MyApplication.context).asynDao().insertOne(asyn)
                     }
-                }else{
+                } else {
                     //notes未曾上传到服务端
                     //删除之前存在过的add、update记录
-                    Log.d("deletenote函数内","notes未曾上传到服务端")
-                    withContext(Dispatchers.IO){
-                        NotesDatabase.getDatabase(MyApplication.context).asynDao().deleteByOfflineId(note_id)
+                    withContext(Dispatchers.IO) {
+                        NotesDatabase.getDatabase(MyApplication.context).asynDao()
+                            .deleteByOfflineId(note_id)
                     }
                 }
 
                 //删除idmap中相关的键值对
-                withContext(Dispatchers.IO){
+                withContext(Dispatchers.IO) {
                     NotesDatabase.getDatabase(MyApplication.context).idmapDao().delete(idMap)
                 }
-                withContext(Dispatchers.IO){
-                    NotesDatabase.getDatabase(MyApplication.context).noteDao().deleteSpecificNote(note_id)
+                withContext(Dispatchers.IO) {
+                    NotesDatabase.getDatabase(MyApplication.context).noteDao()
+                        .deleteSpecificNote(note_id)
                 }
             }
             val intent = Intent(MyApplication.context, MainActivity::class.java)
-            //本地删除
             startActivity(intent)
         }
     }
@@ -406,8 +410,8 @@ class CreateNoteFragment : BaseFragment(), EasyPermissions.PermissionCallbacks,
                 }
                 "DeleteNote" -> {
                     //delete note
-                    val speId=intent.getIntExtra("specific_id",-1)
-                    if (noteId==speId  && noteId!=-1){
+                    val speId = intent.getIntExtra("specific_id", -1)
+                    if (noteId == speId && noteId != -1) {
                         deleteNote(noteId)
                     }
 
@@ -527,6 +531,7 @@ class CreateNoteFragment : BaseFragment(), EasyPermissions.PermissionCallbacks,
     override fun onRationaleAccepted(requestCode: Int) {
 
     }
+
     fun replaceFragment(fragment: Fragment) {
         val fragmentTransaction = activity!!.supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.placeNotesFragment, fragment)

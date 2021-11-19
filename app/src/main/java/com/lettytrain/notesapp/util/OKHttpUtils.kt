@@ -18,11 +18,11 @@ object OKHttpUtils {
         client.newCall(request).enqueue(callback)
     }
 
-    private  val JSONFormat get()  = String.format("application/json; charset=utf-8").toMediaType()
+    private val JSONFormat get() = String.format("application/json; charset=utf-8").toMediaType()
 
     fun post(url: String, json: String, callback: OKHttpCallback) {
         callback.url = url
-        val requestBody =json.toRequestBody(JSONFormat)
+        val requestBody = json.toRequestBody(JSONFormat)
         val request = Request.Builder().url(url).post(requestBody).build()
         client.newCall(request).enqueue(callback)
     }
