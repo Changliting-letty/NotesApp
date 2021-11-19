@@ -26,7 +26,7 @@ interface IdMapDao {
      fun selectOnlineId(offlineid: Int): Int
 
     @Query("SELECT offlineId from idmap where onlineId=:onlineid")
-    fun selectOfflineId(onlineid: Int): Int
+    suspend fun selectOfflineId(onlineid: Int): Int
     @Query("SELECT * FROM IDMAP where offlineId=:note_id")
      fun selectIdmap(note_id:Int):IdMap
 

@@ -130,7 +130,7 @@ class CreateNoteFragment : BaseFragment(), EasyPermissions.PermissionCallbacks,
             }
         }
 
-        val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+        val sdf = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
         currentDate = sdf.format(Date())
         colorView.setBackgroundColor(Color.parseColor(selectedColor))
         tvDateTime.text = currentDate
@@ -260,9 +260,9 @@ class CreateNoteFragment : BaseFragment(), EasyPermissions.PermissionCallbacks,
                 notes.userId = userId
                 val offline_id= NotesDatabase.getDatabase(MyApplication.context).noteDao().insertNotes(notes)
                 var idmap=IdMap()
+                idmap.userId=userId
                 idmap.offlineId=offline_id.toInt()
                 idmap.onlineId=-1
-
                 val idmap_id=NotesDatabase.getDatabase(MyApplication.context).idmapDao().insertMap(idmap)
                 Log.d("create","idmap_id${idmap_id.toInt()}已经插入成功")
                     var asyn=Asyn()

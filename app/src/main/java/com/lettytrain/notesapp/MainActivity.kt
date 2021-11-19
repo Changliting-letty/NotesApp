@@ -39,21 +39,6 @@ class MainActivity : AppCompatActivity() {
         fragment.arguments = bundle
         replaceFragment(fragment)
         setSupportActionBar(toolbar)
-//        //每间隔一小时执行同步
-//        val constraints=Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED)
-//            .setRequiresBatteryNotLow(true)
-//            .build()
-//        val request = PeriodicWorkRequest.Builder(SynToRemoteWorker::class.java,1,TimeUnit.HOURS).setConstraints(constraints)
-//            .build()
-//        WorkManager.getInstance(this).enqueue(request)
-//        WorkManager.getInstance(this).getWorkInfoByIdLiveData(request.id)
-//            .observe(this , Observer{ t ->
-//                if (t.state==WorkInfo.State.SUCCEEDED){
-//                    Log.d("MainActivity", "成功同步至服务端一次,时间：${Date().getNowDateTime()}")
-//                } else if (t.state == WorkInfo.State.FAILED) {
-//                    Log.d("MainActivity", "同步至服务端失败一次,时间：${Date().getNowDateTime()}")
-//                }
-//            })
         toolbar.setOnMenuItemClickListener {
             item ->
             when(item.itemId){
@@ -61,27 +46,17 @@ class MainActivity : AppCompatActivity() {
                 {
                     //触发后台同步操作,立即运行
                     Log.d("MainActivity", "用户点击backup,时间：${Date().getNowDateTime()}")
-//                    val constraints=Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED)
-//                        .setRequiresBatteryNotLow(true)
-//                        .build()
                     val request = OneTimeWorkRequest.Builder(SynToRemoteWorker::class.java).build()
                     WorkManager.getInstance(this).enqueue(request)
-                    //监听运行结果
-//                    WorkManager.getInstance(this).getWorkInfoByIdLiveData(request.id)
-//                        .observe(this , Observer{ t ->
-//                            if (t.state==WorkInfo.State.SUCCEEDED){
-//                                Log.d("MainActivity", "成功同步至服务端一次,时间：${Date().getNowDateTime()}")
-//                            } else if (t.state == WorkInfo.State.FAILED) {
-//                                Log.d("MainActivity", "同步至服务端失败一次,时间：${Date().getNowDateTime()}")
-//                            }
-//                        })  WorkManager.getInstance(this).getWorkInfoByIdLiveData(request.id)
-//                        .observe(this , Observer{ t ->
-//                            if (t.state==WorkInfo.State.SUCCEEDED){
-//                                Log.d("MainActivity", "成功同步至服务端一次,时间：${Date().getNowDateTime()}")
-//                            } else if (t.state == WorkInfo.State.FAILED) {
-//                                Log.d("MainActivity", "同步至服务端失败一次,时间：${Date().getNowDateTime()}")
-//                            }
-//                        })
+                   // 监听运行结果
+                    WorkManager.getInstance(this).getWorkInfoByIdLiveData(request.id)
+                        .observe(this , Observer{ t ->
+                            if (t.state==WorkInfo.State.SUCCEEDED){
+                                Log.d("MainActivity", "成功同步至服务端一次,时间：${Date().getNowDateTime()}")
+                            } else if (t.state == WorkInfo.State.FAILED) {
+                                Log.d("MainActivity", "同步至服务端失败一次,时间：${Date().getNowDateTime()}")
+                            }
+                        })
                 }
             }
             true
