@@ -39,7 +39,7 @@ class SignupActivity : AppCompatActivity() {
                 confirm.setText("")
             } else {
                 OKHttpUtils.get(
-                    "http://161.97.110.236:8080/portal/user/signup.do?userName=${username.text.toString()}&password=${password.text.toString()}",
+                    "http://10.236.11.105:8080/portal/user/signup.do?userName=${username.text.toString()}&password=${password.text.toString()}",
                     object : OKHttpCallback() {
                         override fun onFinish(status1: String, result: String) {
                             super.onFinish(status1, result)

@@ -12,6 +12,7 @@ import com.lettytrain.notesapp.util.getNowDateTime
 import java.util.*
 import java.util.concurrent.TimeUnit
 import androidx.lifecycle.Observer
+import com.lettytrain.notesapp.util.SynWorker
 
 /**
  * desc:
@@ -30,7 +31,7 @@ class MyApplication : Application() {
         super.onCreate()
         context = applicationContext
         val request =
-            PeriodicWorkRequest.Builder(SynToRemoteWorker::class.java, 15, TimeUnit.MINUTES).build()
+            PeriodicWorkRequest.Builder(SynWorker::class.java, 15, TimeUnit.MINUTES).setInitialDelay(15,TimeUnit.MINUTES).build()
         WorkManager.getInstance(this).enqueue(request)
     }
 }

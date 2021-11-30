@@ -19,6 +19,8 @@ import android.widget.ProgressBar
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -28,6 +30,7 @@ import com.lettytrain.notesapp.entities.Asyn
 import com.lettytrain.notesapp.entities.IdMap
 import com.lettytrain.notesapp.entities.Notes
 import com.lettytrain.notesapp.entities.User
+import com.lettytrain.notesapp.model.NotesViewModel
 import com.lettytrain.notesapp.util.NoteBottemSheetFragment.Companion.noteId
 import com.lettytrain.notesapp.util.OKHttpCallback
 import com.lettytrain.notesapp.util.OKHttpUtils
@@ -55,10 +58,10 @@ class NotesHomeFragment : BaseFragment() {
 
     var arrNotes = ArrayList<Notes>()
     var notesAdapter: NotesAdapter = NotesAdapter()
+    lateinit var  viewModel: NotesViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-
         }
     }
 
@@ -82,6 +85,7 @@ class NotesHomeFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         recycler_view.setHasFixedSize(true)
         recycler_view.layoutManager =
             StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
@@ -106,6 +110,12 @@ class NotesHomeFragment : BaseFragment() {
         fabBtnCreateNote.setOnClickListener {
             replaceFragment(CreateNoteFragment.newInstance())
         }
+        //监听数据库变化
+        viewModel= ViewModelProvider(this).get(NotesViewModel::class.java)
+        viewModel.loalLivedata.observe(this, androidx.lifecycle.Observer {
+            notesAdapter.setData(it)
+            notesAdapter.notifyDataSetChanged()
+        })
         //搜索
         search_view.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -147,8 +157,9 @@ class NotesHomeFragment : BaseFragment() {
         launch {
             //2.已经获取了服务端的所有notes，与本地已经有的note进行比较
             val user = SharedPreferenceUtil.readObject("user", UserVo::class.java)
+            val userId=user.userId!!
             var idmaps = withContext(Dispatchers.IO) {
-                NotesDatabase.getDatabase(MyApplication.context).idmapDao().selectAll(user.userId!!)
+                NotesDatabase.getDatabase(MyApplication.context).idmapDao().selectAll(userId)
             }
             if (idmaps.size == 0) {
                 //本地没有任何notes的情况，直接将服务端的所有notes写入本地
@@ -167,9 +178,12 @@ class NotesHomeFragment : BaseFragment() {
                 for (noteVo in list) {
                     if (local_onlineId_list.contains(noteVo.id)) {
                         //2.1 本地和服务端都有，比较谁更新
-                        var noteLocalId =
+                        val note_id=noteVo.id!!
+                        var noteLocalId = withContext(Dispatchers.IO){
                             NotesDatabase.getDatabase(MyApplication.context).idmapDao()
-                                .selectOfflineId(noteVo.id!!)
+                                .selectOfflineId(note_id)
+                        }
+
                         var noteInLocal = withContext(Dispatchers.IO) {
                             NotesDatabase.getDatabase(MyApplication.context).noteDao()
                                 .getSpecificNote(noteLocalId)
@@ -252,7 +266,7 @@ class NotesHomeFragment : BaseFragment() {
     fun initData() {
         launch(Dispatchers.IO) {
             OKHttpUtils.get(
-                "http://161.97.110.236:8080/portal/notes/searchAllNotes.do",
+                "http://10.236.11.105:8080/portal/notes/searchAllNotes.do",
                 object : OKHttpCallback() {
                     override fun onFinish(status1: String, result: String) {
                         super.onFinish(status1, result)
@@ -264,11 +278,12 @@ class NotesHomeFragment : BaseFragment() {
                                 result,
                                 turnsType
                             )
-                            val noteslist = jsobj.data as List<NotesVo>
-                            savedToLocalDb(noteslist)
-//                            runOnUiThread {
-//                                uiUpdate(noteslist)
-//                            }
+                            SharedPreferenceUtil.putString("lastSynTime",jsobj.timeNow!!)
+                            if (jsobj.status==0){
+                                val noteslist = jsobj.data as List<NotesVo>
+                                savedToLocalDb(noteslist)
+                            }
+
                         }
                     }
                 }
