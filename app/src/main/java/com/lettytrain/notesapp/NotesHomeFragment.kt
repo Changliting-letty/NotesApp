@@ -162,10 +162,10 @@ class NotesHomeFragment : BaseFragment() {
                 NotesDatabase.getDatabase(MyApplication.context).idmapDao().selectAll(userId)
             }
             if (idmaps.size == 0) {
-                //本地没有任何notes的情况，直接将服务端的所有notes写入本地
+                //此用户本地没有任何notes的情况，直接将服务端的所有notes写入本地
                 localNoteExits(list)
             } else {
-                //本地存在notes的情况
+                //用户本地存在notes的情况
                 //收集本地存在的notes的id,与服务端的notes进行比较
                 var localNoteExitList = ArrayList<NotesVo>()
                 var local_onlineId_list = ArrayList<Int>()
@@ -264,6 +264,7 @@ class NotesHomeFragment : BaseFragment() {
     }
 
     fun initData() {
+
         launch(Dispatchers.IO) {
             OKHttpUtils.get(
                 "http://10.236.11.105:8080/portal/notes/searchAllNotes.do",
