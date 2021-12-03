@@ -6,11 +6,11 @@ import com.lettytrain.notesapp.entities.Asyn
 
 @Dao
 interface AsynDao {
-    @Query("SELECT * FROM asyn")
-    fun selectAll(): List<Asyn>
+    @Query("SELECT * FROM asyn where userId=:userId")
+    fun selectAll(userId: Int): List<Asyn>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertOne(asyn: Asyn)
+    fun insertOne(asyn: Asyn): Long
 
     @Delete
     fun deleteOne(asyn: Asyn)
@@ -27,5 +27,7 @@ interface AsynDao {
     @Query("UPDATE asyn SET time=:newTime WHERE offlineId=:offline_id")
     fun updateTime(offline_id: Int, newTime: String)
 
+    @Query("DELETE FROM asyn")
+    fun clearTable()
 
 }

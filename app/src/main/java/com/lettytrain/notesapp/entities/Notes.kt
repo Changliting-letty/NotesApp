@@ -10,6 +10,7 @@ class Notes : Serializable {
 
     @PrimaryKey(autoGenerate = true)
     var id: Int? = null
+
     @ColumnInfo(name = "userId")
     var userId: Int? = null
 

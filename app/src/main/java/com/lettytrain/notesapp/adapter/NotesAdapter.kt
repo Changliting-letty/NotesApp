@@ -45,7 +45,7 @@ class NotesAdapter() :
         holder.itemView.tvDesc.text = arrayList[position].noteText
         holder.itemView.tvDateTime.text = arrayList[position].updateTime
 
-        if (arrayList[position].color != null) {
+        if (arrayList[position].color != null && arrayList[position].color != "") {
             holder.itemView.cardView.setCardBackgroundColor(Color.parseColor(arrayList[position].color))
         } else {
             holder.itemView.cardView.setCardBackgroundColor(
@@ -65,7 +65,6 @@ class NotesAdapter() :
             Log.d("notesAdapter", "notesId${arrayList[position].id!!}")
             listener!!.onClicked(arrayList[position].id!!)
         }
-
     }
 
     interface OnItemClickListener {

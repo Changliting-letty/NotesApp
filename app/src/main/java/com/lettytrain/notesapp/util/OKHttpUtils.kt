@@ -14,6 +14,7 @@ object OKHttpUtils {
 
     fun get(url: String, callback: OKHttpCallback) {
         callback.url = url
+        val token = SharedPreferenceUtil.readString("token")
         val request = Request.Builder().url(url).build()
         client.newCall(request).enqueue(callback)
     }
@@ -22,6 +23,7 @@ object OKHttpUtils {
 
     fun post(url: String, json: String, callback: OKHttpCallback) {
         callback.url = url
+        val token = SharedPreferenceUtil.readString("token")
         val requestBody = json.toRequestBody(JSONFormat)
         val request = Request.Builder().url(url).post(requestBody).build()
         client.newCall(request).enqueue(callback)

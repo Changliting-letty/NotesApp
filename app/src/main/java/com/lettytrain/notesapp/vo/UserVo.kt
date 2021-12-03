@@ -6,4 +6,5 @@ class UserVo {
     var userName: String? = null
     var createTime: String? = null
     var updateTime: String? = null
+    var token: String? = null
 }

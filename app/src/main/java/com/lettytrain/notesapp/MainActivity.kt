@@ -11,19 +11,23 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.work.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.lettytrain.notesapp.entities.Notes
+import com.lettytrain.notesapp.model.NotesViewModel
 import com.lettytrain.notesapp.util.*
 import com.lettytrain.notesapp.vo.ServerResponse
 import com.lettytrain.notesapp.vo.UserVo
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.backup -> {
                     //触发后台同步操作,立即运行
                     Log.d("MainActivity", "用户点击backup,时间：${Date().getNowDateTime()}")
-                    val request = OneTimeWorkRequest.Builder(SynToRemoteWorker::class.java).build()
+                    val request = OneTimeWorkRequest.Builder(SynWorker::class.java).build()
                     WorkManager.getInstance(this).enqueue(request)
                     // 监听运行结果
                     WorkManager.getInstance(this).getWorkInfoByIdLiveData(request.id)
@@ -58,10 +62,10 @@ class MainActivity : AppCompatActivity() {
                         })
                 }
             }
+
             true
         }
         supportActionBar?.let {
-
             it.setDisplayHomeAsUpEnabled(true)
             it.setHomeAsUpIndicator(R.drawable.ic_menu_use)
         }
@@ -92,13 +96,13 @@ class MainActivity : AppCompatActivity() {
                 R.id.navUnlogin -> {
                     SharedPreferenceUtil.putBoolean("isLogin", false)   //退出登录
                     SharedPreferenceUtil.putBoolean("isLoginFirst", false)
-                    logout()
+                    logout(userId)
                     val intent = Intent(MyApplication.context, LoginActivity::class.java)
                     startActivity(intent)
                 }
                 R.id.navLogOff -> {
                     SharedPreferenceUtil.clear()  //注销登录
-                    logout()
+                    logout(userId)
                     val intent = Intent(MyApplication.context, LoginActivity::class.java)
                     startActivity(intent)
                 }
@@ -130,7 +134,7 @@ class MainActivity : AppCompatActivity() {
         fragmentTransaction.commit()
     }
 
-    fun logout() {
+    fun logout(userId: Int) {
         OKHttpUtils.get("http://161.97.110.236:8080/portal/user/logout.do", OKHttpCallback())
     }
 }

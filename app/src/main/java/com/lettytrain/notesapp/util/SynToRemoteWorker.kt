@@ -15,15 +15,18 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import com.lettytrain.notesapp.vo.ServerResponse
+import com.lettytrain.notesapp.vo.UserVo
 import java.util.*
 import kotlin.collections.HashMap
-
+/*
+* 这版暂时不用了，等实现实时的时候应该能用
+* */
 class SynToRemoteWorker(context: Context, params: WorkerParameters) :
     Worker(context, params) {
     override fun doWork(): Result {
-
+        val userVo = SharedPreferenceUtil.readObject("user", UserVo::class.java)
         val asyns =
-            NotesDatabase.getDatabase(MyApplication.context).asynDao().selectAll()
+            NotesDatabase.getDatabase(MyApplication.context).asynDao().selectAll(userVo.userId!!)
 
         if (asyns.size == 0) {
             Log.d("SynToRemoteWorker", "没有什么可同步的,时间：${Date().getNowDateTime()}")
@@ -37,7 +40,7 @@ class SynToRemoteWorker(context: Context, params: WorkerParameters) :
                             .getSpecificNote(offline_id!!)
                         val jsonString = formatJson(Gson().toJson(notes))
                         Log.d("work", "${jsonString}")
-                        val url = "http://161.97.110.236:8080/portal/notes/addNote.do"
+                        val url = "http://10.236.11.105:8080/portal/notes/addNote.do"
                         OKHttpUtils.post(url, jsonString, object : OKHttpCallback() {
                             override fun onFinish(status: String, msg: String) {
                                 super.onFinish(status, msg)
@@ -87,7 +90,7 @@ class SynToRemoteWorker(context: Context, params: WorkerParameters) :
                         val online_id = asyn.onlineId;
                         var jsonString = formatJson(Gson().toJson(notes))
                         var url =
-                            "http://161.97.110.236:8080/portal/notes/updateNote.do?onlineId=${online_id}"
+                            "http://10.236.11.105:8080/portal/notes/updateNote.do?onlineId=${online_id}"
                         OKHttpUtils.post(url, jsonString, object : OKHttpCallback() {
                             override fun onFinish(status: String, msg: String) {
                                 super.onFinish(status, msg)
@@ -123,7 +126,7 @@ class SynToRemoteWorker(context: Context, params: WorkerParameters) :
                         val online_id = asyn.onlineId
                         //后端同步删除
                         OKHttpUtils.get(
-                            "http://161.97.110.236:8080/portal/notes/deleteNote.do?onlineId=${online_id}",
+                            "http://10.236.11.105:8080/portal/notes/deleteNote.do?onlineId=${online_id}",
                             object : OKHttpCallback() {
                                 override fun onFinish(status: String, msg: String) {
                                     super.onFinish(status, msg)
@@ -154,7 +157,6 @@ class SynToRemoteWorker(context: Context, params: WorkerParameters) :
         }
         return Result.success()
     }
-
 
     fun formatJson(content: String): String {
         val gson = GsonBuilder().setPrettyPrinting().create()

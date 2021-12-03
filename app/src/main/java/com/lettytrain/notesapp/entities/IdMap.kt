@@ -10,10 +10,13 @@ import java.io.Serializable
 class IdMap : Serializable {
     @PrimaryKey(autoGenerate = true)
     var id: Int? = null
+
     @ColumnInfo(name = "userId")
     var userId: Int? = null
+
     @ColumnInfo(name = "offlineId")
     var offlineId: Int? = null
+
     @ColumnInfo(name = "onlineId")
     var onlineId: Int? = null
 }

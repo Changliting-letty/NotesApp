@@ -9,6 +9,7 @@ import java.io.IOException
 open class OKHttpCallback : Callback {
     var url: String = ""
     var result: String = ""
+
     //成功
     override fun onResponse(call: Call, response: Response) {
         result = response.body?.string().toString()

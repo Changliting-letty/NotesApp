@@ -20,6 +20,7 @@ class SignupActivity : AppCompatActivity() {
         setContentView(R.layout.activity_signup)
         newUserRegister()
     }
+
     private fun newUserRegister() {
         signup.setOnClickListener {
             //判空
@@ -43,61 +44,75 @@ class SignupActivity : AppCompatActivity() {
                     object : OKHttpCallback() {
                         override fun onFinish(status1: String, result: String) {
                             super.onFinish(status1, result)
+                            if (status1.equals("success")) {
+                                var jsobj = Gson().fromJson(result, ServerResponse::class.java)
+                                val status = jsobj.status
+                                val msg = jsobj.msg
+                                if (status == ResponseCode.USERNAME_EXITS.num) {
+                                    //如果用户名已经存在
+                                    Looper.prepare()
+                                    Toast.makeText(
+                                        MyApplication.context,
+                                        "The username already exists. ",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    username.setText("")
+                                    password.setText("")
+                                    confirm.setText("")
+                                    Looper.loop()
 
-                            var jsobj = Gson().fromJson(result, ServerResponse::class.java)
-                            val status = jsobj.status
-                            val msg = jsobj.msg
-                            if (status == ResponseCode.USERNAME_EXITS.num) {
-                                //如果用户名已经存在
-                                Looper.prepare()
-                                Toast.makeText(
-                                    MyApplication.context,
-                                    "The username already exists. ",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                username.setText("")
-                                password.setText("")
-                                confirm.setText("")
-                                Looper.loop()
+                                } else if (status == ResponseCode.IS_SUCCESS.num) {
+                                    Looper.prepare()
+                                    username.setText("")
+                                    password.setText("")
+                                    confirm.setText("")
+                                    Toast.makeText(
+                                        MyApplication.context,
+                                        "To Login......",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
 
-                            } else if (status ==ResponseCode.IS_SUCCESS.num) {
-                                Looper.prepare()
-                                username.setText("")
-                                password.setText("")
-                                confirm.setText("")
-                                Toast.makeText(
-                                    MyApplication.context,
-                                    "To Login......",
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-
-                                val intent =
-                                    Intent(MyApplication.context, LoginActivity::class.java)
-                                startActivity(intent)
-                                Looper.loop()
+                                    val intent =
+                                        Intent(MyApplication.context, LoginActivity::class.java)
+                                    startActivity(intent)
+                                    Looper.loop()
+                                } else {
+                                    //链接失败
+                                    Looper.prepare()
+                                    Toast.makeText(
+                                        MyApplication.context,
+                                        "The connection fails,please try again. ",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    username.setText("")
+                                    password.setText("")
+                                    confirm.setText("")
+                                    val intent =
+                                        Intent(MyApplication.context, LoginActivity::class.java)
+                                    startActivity(intent)
+                                    Looper.loop()
+                                }
                             } else {
-                                //链接失败
                                 Looper.prepare()
                                 Toast.makeText(
                                     MyApplication.context,
                                     "The connection fails,please try again. ",
                                     Toast.LENGTH_SHORT
                                 ).show()
-                                username.setText("")
-                                password.setText("")
-                                confirm.setText("")
                                 val intent =
-                                    Intent(MyApplication.context, LoginActivity::class.java)
+                                    Intent(MyApplication.context, SignupActivity::class.java)
                                 startActivity(intent)
                                 Looper.loop()
                             }
+
                         }
                     }
                 )
             }
         }
     }
+
     override fun onDestroy() {
         super.onDestroy()
     }

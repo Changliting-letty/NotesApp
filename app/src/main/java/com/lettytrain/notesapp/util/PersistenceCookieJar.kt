@@ -8,6 +8,7 @@ import okhttp3.HttpUrl
 //下面代码只是在运行时缓存了Cookie，当App退出的时候Cookie就不存在了
 class PersistenceCookieJar : CookieJar {
     var cache: MutableList<Cookie> = mutableListOf()
+
     //Http请求结束，Response中有Cookie时候回调
     override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
         //内存中缓存
