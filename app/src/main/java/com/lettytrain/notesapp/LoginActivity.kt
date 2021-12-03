@@ -4,9 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
 import android.os.Looper
-import android.os.Message
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
@@ -31,7 +29,7 @@ class LoginActivity : AppCompatActivity() {
         //记住密码
         val isRemember = SharedPreferenceUtil.readBoolean("remember_pass")
         if (isRemember) {
-            val user_name = SharedPreferenceUtil.readStringEncypted("userName")
+            val user_name = SharedPreferenceUtil.readString("userName")
             val pass_word = SharedPreferenceUtil.readStringEncypted("passWord")
             username.setText(user_name)
             password.setText(pass_word)
@@ -46,7 +44,7 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this, "Password is  Requeried", Toast.LENGTH_SHORT).show()
             } else {
                 OKHttpUtils.get(
-                    "http://10.236.11.105:8080/portal/user/login.do?username=${username.text}&password=${password.text}",
+                    "http://161.97.110.236:8080/portal/user/login.do?username=${username.text}&password=${password.text}",
                     object : OKHttpCallback() {
                         override fun onFinish(status1: String, result: String) {
                             super.onFinish(status1, result)
@@ -82,6 +80,7 @@ class LoginActivity : AppCompatActivity() {
                                 SharedPreferenceUtil.putInt("login_failure_time",0)
                                 val turnsType = object : TypeToken<ServerResponse<UserVo>>() {}.type
                                 val jsobj = Gson().fromJson<ServerResponse<UserVo>>(result, turnsType)
+
                                 val status = jsobj.status
                                 if (status == ResponseCode.USERNAME_NOT_EXISTS.num) {
                                     Looper.prepare()
@@ -105,10 +104,13 @@ class LoginActivity : AppCompatActivity() {
                                 } else if (status == ResponseCode.IS_SUCCESS.num) {
                                     //登录成功
                                     //如果记住密码复选框被选中
+//                                    //存储token
+//                                    val  token=jsobj.token
+//                                    SharedPreferenceUtil.putString("token",token!!)
                                     Looper.prepare()
                                     if (rememberPass.isChecked) {
                                         SharedPreferenceUtil.putBoolean("remember_pass", true)
-                                        SharedPreferenceUtil.putStringEncrypted(
+                                        SharedPreferenceUtil.putString(
                                             "userName",
                                             username.text.toString()
                                         )
@@ -121,7 +123,7 @@ class LoginActivity : AppCompatActivity() {
                                     val user = SharedPreferenceUtil.readObject(
                                         "user",
                                         UserVo::class.java
-                                    ) as UserVo
+                                    )
                                     if (user.userId == -1) {
                                         SharedPreferenceUtil.putBoolean("isLoginFirst", true)
 

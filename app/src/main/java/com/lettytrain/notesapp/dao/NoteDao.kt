@@ -13,7 +13,7 @@ interface NoteDao {
     suspend fun getAllNotes(): List<Notes>
 
     @Query("SELECT * FROM notes ORDER BY update_time DESC")
-     fun getNotesList(): LiveData<List<Notes>>
+    fun getNotesList(): LiveData<List<Notes>>
 
     @Query("SELECT * FROM notes where userId=:userId ORDER BY id DESC")
     suspend fun getAllNotesByUserId(userId: Int): List<Notes>

@@ -28,6 +28,7 @@ import com.lettytrain.notesapp.vo.UserVo
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
+
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,13 +96,13 @@ class MainActivity : AppCompatActivity() {
                 R.id.navUnlogin -> {
                     SharedPreferenceUtil.putBoolean("isLogin", false)   //退出登录
                     SharedPreferenceUtil.putBoolean("isLoginFirst", false)
-                    logout()
+                    logout(userId)
                     val intent = Intent(MyApplication.context, LoginActivity::class.java)
                     startActivity(intent)
                 }
                 R.id.navLogOff -> {
                     SharedPreferenceUtil.clear()  //注销登录
-                    logout()
+                    logout(userId)
                     val intent = Intent(MyApplication.context, LoginActivity::class.java)
                     startActivity(intent)
                 }
@@ -133,7 +134,7 @@ class MainActivity : AppCompatActivity() {
         fragmentTransaction.commit()
     }
 
-    fun logout() {
-        OKHttpUtils.get("http://10.236.11.105:8080/portal/user/logout.do", OKHttpCallback())
+    fun logout(userId: Int) {
+        OKHttpUtils.get("http://161.97.110.236:8080/portal/user/logout.do", OKHttpCallback())
     }
 }

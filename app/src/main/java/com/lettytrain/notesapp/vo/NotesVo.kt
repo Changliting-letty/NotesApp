@@ -14,4 +14,5 @@ class NotesVo {
     var imgPath: String? = null
     var webLink: String? = null
     var color: String? = null
+
 }

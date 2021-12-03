@@ -12,6 +12,7 @@ abstract class UserDatabase : RoomDatabase() {
 
     companion object {
         var userDatabase: com.lettytrain.notesapp.database.UserDatabase? = null
+
         @Synchronized
         fun getDatabase(context: Context): com.lettytrain.notesapp.database.UserDatabase {
             if (userDatabase == null) {

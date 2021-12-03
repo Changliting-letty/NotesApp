@@ -41,13 +41,16 @@ object SharedPreferenceUtil {
         edit.putString(key, value)
         edit.apply()
     }
-    fun putInt(key:String,value:Int){
-        edit.putInt(key,value)
+
+    fun putInt(key: String, value: Int) {
+        edit.putInt(key, value)
         edit.apply()
     }
-    fun readInt(key:String):Int{
-        return  sp.getInt(key,0)
+
+    fun readInt(key: String): Int {
+        return sp.getInt(key, 0)
     }
+
     fun readBoolean(key: String): Boolean {
         return sp.getBoolean(key, false)
 

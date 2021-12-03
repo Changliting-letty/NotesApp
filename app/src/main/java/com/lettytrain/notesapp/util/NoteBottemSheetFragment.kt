@@ -30,7 +30,7 @@ class NoteBottemSheetFragment : BottomSheetDialogFragment() {
         }
     }
 
-    var selectedColor =  MyApplication.context.resources.getString(R.color.ColorLightBlack.dec())
+    var selectedColor = MyApplication.context.resources.getString(R.color.ColorLightBlack.dec())
     override fun setupDialog(dialog: Dialog, style: Int) {
         super.setupDialog(dialog, style)
 

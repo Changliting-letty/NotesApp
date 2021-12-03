@@ -31,7 +31,8 @@ class MyApplication : Application() {
         super.onCreate()
         context = applicationContext
         val request =
-            PeriodicWorkRequest.Builder(SynWorker::class.java, 15, TimeUnit.MINUTES).setInitialDelay(15,TimeUnit.MINUTES).build()
+            PeriodicWorkRequest.Builder(SynWorker::class.java, 15, TimeUnit.MINUTES)
+                .setInitialDelay(15, TimeUnit.MINUTES).build()
         WorkManager.getInstance(this).enqueue(request)
     }
 }

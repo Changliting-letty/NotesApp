@@ -97,7 +97,7 @@ class CreateNoteFragment : BaseFragment(), EasyPermissions.PermissionCallbacks,
                         NotesDatabase.getDatabase(MyApplication.context).noteDao()
                             .getSpecificNote(noteId)
                     }
-                    if (notes.color != null && notes.color !="") {
+                    if (notes.color != null && notes.color != "") {
                         colorView.setBackgroundColor(Color.parseColor(notes.color))
                     } else {
                         colorView.setBackgroundColor(Color.parseColor(selectedColor))
@@ -207,7 +207,6 @@ class CreateNoteFragment : BaseFragment(), EasyPermissions.PermissionCallbacks,
             val idMap = withContext(Dispatchers.IO) {
                 NotesDatabase.getDatabase(MyApplication.context).idmapDao().selectIdmap(noteId)
             }
-            Log.d("update测试","offid${idMap.offlineId},onlineid${idMap.onlineId}")
             if (idMap.onlineId != -1) {
                 //note已经add到后端，直接添加update记录
                 val user = SharedPreferenceUtil.readObject("user", UserVo::class.java)
@@ -217,15 +216,14 @@ class CreateNoteFragment : BaseFragment(), EasyPermissions.PermissionCallbacks,
                 asyn.onlineId = idMap.onlineId
                 asyn.operation = "update"
                 asyn.time = currentDate
-                val count=withContext(Dispatchers.IO) {
+                val count = withContext(Dispatchers.IO) {
                     //存储到本地
                     NotesDatabase.getDatabase(MyApplication.context).asynDao().insertOne(asyn)
                 }
-                val  asyn_list = withContext(Dispatchers.IO){
-                    NotesDatabase.getDatabase(MyApplication.context).asynDao().selectAll(user.userId!!)
+                val asyn_list = withContext(Dispatchers.IO) {
+                    NotesDatabase.getDatabase(MyApplication.context).asynDao()
+                        .selectAll(user.userId!!)
                 }
-                Log.d("update测试","asyn长度 ${asyn_list.size}")
-                Log.d("update测试","asyb_id${count}")
             } else {
                 //修改asyn的add记录的time
                 withContext(Dispatchers.IO) {
@@ -233,11 +231,12 @@ class CreateNoteFragment : BaseFragment(), EasyPermissions.PermissionCallbacks,
                         .updateTime(noteId, currentDate!!)
                 }
             }
-            val userVo=SharedPreferenceUtil.readObject("user",UserVo::class.java)
-            val  asyn_list = withContext(Dispatchers.IO){
-                NotesDatabase.getDatabase(MyApplication.context).asynDao().selectAll(userVo.userId!!)
+            val userVo = SharedPreferenceUtil.readObject("user", UserVo::class.java)
+            val asyn_list = withContext(Dispatchers.IO) {
+                NotesDatabase.getDatabase(MyApplication.context).asynDao()
+                    .selectAll(userVo.userId!!)
             }
-            Log.d("update测试","asyn长度 ${asyn_list.size}")
+            Log.d("update测试", "asyn长度 ${asyn_list.size}")
             etNoteTitle.setText("")
             etNoteSubTitle.setText("")
             etNoteDesc.setText("")
@@ -321,56 +320,50 @@ class CreateNoteFragment : BaseFragment(), EasyPermissions.PermissionCallbacks,
                 NotesDatabase.getDatabase(MyApplication.context).idmapDao().selectIdmap(note_id)
             }
 
-                Log.d("deletenote", "noteid:${note_id},idmap.onlineId:${idMap.onlineId}")
-                val user = SharedPreferenceUtil.readObject("user", UserVo::class.java)
-                //如果还没更新到后端，就不需要执行后端同步
-                if (idMap.onlineId != -1) {
-                    //note已经上传过服务端
-                    val count = withContext(Dispatchers.IO) {
-                        NotesDatabase.getDatabase(MyApplication.context).asynDao().isExist(note_id)
-                    }
-                    if (count > 0) {
-                        //存在未同步到后端的更新
-                        withContext(Dispatchers.IO) {
-                            //先删除之前的更新
-                            NotesDatabase.getDatabase(MyApplication.context).asynDao()
-                                .deleteByOfflineId(note_id)
-                        }
-                    }
-                    //新增delete记录
-                    var asyn = Asyn()
-                    asyn.userId = user.userId
-                    asyn.offlineId = note_id
-                    asyn.onlineId = idMap.onlineId
-                    asyn.operation = "delete"
-                    asyn.time = currentDate
+            Log.d("deletenote", "noteid:${note_id},idmap.onlineId:${idMap.onlineId}")
+            val user = SharedPreferenceUtil.readObject("user", UserVo::class.java)
+            //如果还没更新到后端，就不需要执行后端同步
+            if (idMap.onlineId != -1) {
+                //note已经上传过服务端
+                val count = withContext(Dispatchers.IO) {
+                    NotesDatabase.getDatabase(MyApplication.context).asynDao().isExist(note_id)
+                }
+                if (count > 0) {
+                    //存在未同步到后端的更新
                     withContext(Dispatchers.IO) {
-                        //存储到本地
-                        NotesDatabase.getDatabase(MyApplication.context).asynDao().insertOne(asyn)
-                    }
-
-                    val  asyn_list =NotesDatabase.getDatabase(MyApplication.context).asynDao().selectAll(user.userId!!)
-                    for( i in  asyn_list){
-                        Log.d("Synworker","idmap offline_id:${i.offlineId}, online_id${i.onlineId}, opration :${i.operation}")
-                    }
-
-                } else {
-                    //notes未曾上传到服务端
-                    //删除之前存在过的add、update记录
-                    withContext(Dispatchers.IO) {
+                        //先删除之前的更新
                         NotesDatabase.getDatabase(MyApplication.context).asynDao()
                             .deleteByOfflineId(note_id)
                     }
                 }
+                //新增delete记录
+                var asyn = Asyn()
+                asyn.userId = user.userId
+                asyn.offlineId = note_id
+                asyn.onlineId = idMap.onlineId
+                asyn.operation = "delete"
+                asyn.time = currentDate
+                withContext(Dispatchers.IO) {
+                    //存储到本地
+                    NotesDatabase.getDatabase(MyApplication.context).asynDao().insertOne(asyn)
+                }
+            } else {
+                //notes未曾上传到服务端
+                //删除之前存在过的add、update记录
+                withContext(Dispatchers.IO) {
+                    NotesDatabase.getDatabase(MyApplication.context).asynDao()
+                        .deleteByOfflineId(note_id)
+                }
+            }
 
-                //删除idmap中相关的键值对
-                withContext(Dispatchers.IO) {
-                    NotesDatabase.getDatabase(MyApplication.context).idmapDao().delete(idMap)
-                }
-                withContext(Dispatchers.IO) {
-                    NotesDatabase.getDatabase(MyApplication.context).noteDao()
-                        .deleteSpecificNote(note_id)
-                }
+            //删除idmap中相关的键值对
+            withContext(Dispatchers.IO) {
+                NotesDatabase.getDatabase(MyApplication.context).idmapDao().delete(idMap)
+            }
+            withContext(Dispatchers.IO) {
+                NotesDatabase.getDatabase(MyApplication.context).noteDao()
+                    .deleteSpecificNote(note_id)
+            }
             val intent = Intent(MyApplication.context, MainActivity::class.java)
             startActivity(intent)
         }

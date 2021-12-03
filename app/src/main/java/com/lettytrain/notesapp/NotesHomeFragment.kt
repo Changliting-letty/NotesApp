@@ -58,7 +58,7 @@ class NotesHomeFragment : BaseFragment() {
 
     var arrNotes = ArrayList<Notes>()
     var notesAdapter: NotesAdapter = NotesAdapter()
-    lateinit var  viewModel: NotesViewModel
+    lateinit var viewModel: NotesViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -111,7 +111,7 @@ class NotesHomeFragment : BaseFragment() {
             replaceFragment(CreateNoteFragment.newInstance())
         }
         //监听数据库变化
-        viewModel= ViewModelProvider(this).get(NotesViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(NotesViewModel::class.java)
         viewModel.loalLivedata.observe(this, androidx.lifecycle.Observer {
             notesAdapter.setData(it)
             notesAdapter.notifyDataSetChanged()
@@ -121,6 +121,7 @@ class NotesHomeFragment : BaseFragment() {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return true
             }
+
             override fun onQueryTextChange(newText: String?): Boolean {
                 var tempArr = ArrayList<Notes>()
                 for (arr in arrNotes) {
@@ -157,7 +158,7 @@ class NotesHomeFragment : BaseFragment() {
         launch {
             //2.已经获取了服务端的所有notes，与本地已经有的note进行比较
             val user = SharedPreferenceUtil.readObject("user", UserVo::class.java)
-            val userId=user.userId!!
+            val userId = user.userId!!
             var idmaps = withContext(Dispatchers.IO) {
                 NotesDatabase.getDatabase(MyApplication.context).idmapDao().selectAll(userId)
             }
@@ -178,8 +179,8 @@ class NotesHomeFragment : BaseFragment() {
                 for (noteVo in list) {
                     if (local_onlineId_list.contains(noteVo.id)) {
                         //2.1 本地和服务端都有，比较谁更新
-                        val note_id=noteVo.id!!
-                        var noteLocalId = withContext(Dispatchers.IO){
+                        val note_id = noteVo.id!!
+                        var noteLocalId = withContext(Dispatchers.IO) {
                             NotesDatabase.getDatabase(MyApplication.context).idmapDao()
                                 .selectOfflineId(note_id)
                         }
@@ -267,7 +268,7 @@ class NotesHomeFragment : BaseFragment() {
 
         launch(Dispatchers.IO) {
             OKHttpUtils.get(
-                "http://10.236.11.105:8080/portal/notes/searchAllNotes.do",
+                "http://161.97.110.236:8080/portal/notes/searchAllNotes.do",
                 object : OKHttpCallback() {
                     override fun onFinish(status1: String, result: String) {
                         super.onFinish(status1, result)
@@ -279,8 +280,8 @@ class NotesHomeFragment : BaseFragment() {
                                 result,
                                 turnsType
                             )
-                            SharedPreferenceUtil.putString("lastSynTime",jsobj.timeNow!!)
-                            if (jsobj.status==0){
+                            SharedPreferenceUtil.putString("lastSynTime", jsobj.timeNow!!)
+                            if (jsobj.status == 0) {
                                 val noteslist = jsobj.data as List<NotesVo>
                                 savedToLocalDb(noteslist)
                             }
