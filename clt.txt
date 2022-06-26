@@ -1,2 +1,6 @@
 "123"   
+<<<<<<< HEAD
  "1234"   
+=======
+ "other change"    
+>>>>>>> testing
